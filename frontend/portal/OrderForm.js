@@ -67,8 +67,10 @@ export default class OrderForm extends Component {
         this.props.history.push('/');
     }
 
-    onReturn() {
-        return window.confirm('Apakah anda yakin? Form yang sudah anda isi akan kembali kosong jika anda kembali ke halaman sebelumnya.');
+    onReturn(e) {
+        if (!window.confirm('Apakah anda yakin? Form yang sudah anda isi akan kembali kosong jika anda kembali ke halaman sebelumnya.')) {
+            e.preventDefault();
+        }
     }
 
     cloneData() {
