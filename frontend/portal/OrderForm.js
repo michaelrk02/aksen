@@ -1,0 +1,74 @@
+import {Component} from 'react';
+import {Link} from 'react-router-dom';
+import * as Aksen from '../aksen.js';
+
+import OrderFormUnlocked from './OrderFormUnlocked.js';
+import OrderFormLocked from './OrderFormLocked.js';
+
+export default class OrderForm extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            ticketsAvailable: null,
+            formData: {
+                email: '',
+                emailConfirmation: '',
+                orderDetails: '',
+                categoryID: '',
+                tickets: 0
+            }
+        };
+
+        this.onOrder = this.onOrder.bind(this);
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.ticketsAvailable === null) {
+            window.setTimeout((() => {
+                this.setState({ticketsAvailable: 5});
+            }).bind(this), 3000);
+        }
+    }
+
+    render() {
+        const locked = false;
+        const lockDuration = 86400;
+
+        return $('div', {className: 'container grid-md'}, [
+            $('div', {className: 'popup', style: {margin: '2rem'}}, [
+                $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk memesan tiket'),
+                (!locked ? $(OrderFormUnlocked, {form: this}) : $(OrderFormLocked, {form: this, duration: lockDuration})),
+                $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
+                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
+                    $('div', {className: 'column col-4 hide-sm'}),
+                    $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onOrder}, ['Pesan Tiket ', $('i', {className: 'icon icon-check'})])),
+                ])
+            ])
+        ]);
+    }
+
+    onOrder() {
+        const formData = this.state.formData;
+        if (formData.email !== formData.emailConfirmation) {
+            window.alert('Mohon cek e-mail anda sekali lagi');
+            return;
+        }
+        if (formData.tickets <= 0) {
+            window.alert('Tiket yang dibeli tidak boleh 0!');
+            return;
+        }
+        if (formData.tickets > parseInt(this.ticketsAvailable)) {
+            window.alert('Tiket yang dibeli tidak boleh lebih dari tiket yang tersedia! (' + parseInt(this.ticketsAvailable) + ')');
+            return;
+        }
+        window.alert('Form pemesanan anda telah dikirim. Tagihan akan segera kami kirim menuju e-mail anda');
+        this.props.history.push('/');
+    }
+
+    cloneData() {
+        return Object.assign({}, this.state.formData);
+    }
+
+}
+

@@ -1,0 +1,46 @@
+$primary-color: #FF6300;
+$error-color: #FF2B2A;
+
+@import '~spectre.css/src/spectre';
+@import '~spectre.css/src/spectre-icons';
+@import '~spectre.css/src/spectre-exp';
+
+.off-canvas .off-canvas-content {
+    padding: 0;
+    width: 100%;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-content {
+    flex: 1 0 auto;
+}
+
+.shadow-1, .popup {
+    box-shadow: 0px 0px 8px 0px lightgrey;
+}
+
+@keyframes animatezoom {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+.popup {
+    animation: animatezoom 0.6s;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 16px;
+}
+
+.shadow-2 {
+    box-shadow: 0px 0px 16px 0px lightgrey;
+}
+

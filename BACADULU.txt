@@ -1,0 +1,5 @@
+N.B. saat berpindah antara development/production:
+- index.php: ganti environment ke production/development
+- frontend/webpack.config.json: ganti mode ke production/development lalu build ulang
+- application/config/config.php: ganti base_url
+- application/config/database.php: ganti database name, username, password
