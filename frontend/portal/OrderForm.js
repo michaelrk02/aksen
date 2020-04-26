@@ -21,6 +21,7 @@ export default class OrderForm extends Component {
         };
 
         this.onOrder = this.onOrder.bind(this);
+        this.onReturn = this.onReturn.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -40,7 +41,7 @@ export default class OrderForm extends Component {
                 $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk memesan tiket'),
                 (!locked ? $(OrderFormUnlocked, {form: this}) : $(OrderFormLocked, {form: this, duration: lockDuration})),
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
-                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
+                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block', onClick: this.onReturn}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
                     $('div', {className: 'column col-4 hide-sm'}),
                     $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onOrder}, ['Pesan Tiket ', $('i', {className: 'icon icon-check'})])),
                 ])
@@ -64,6 +65,10 @@ export default class OrderForm extends Component {
         }
         window.alert('Form pemesanan anda telah dikirim. Tagihan akan segera kami kirim menuju e-mail anda');
         this.props.history.push('/');
+    }
+
+    onReturn() {
+        return window.confirm('Apakah anda yakin? Form yang sudah anda isi akan kembali kosong jika anda kembali ke halaman sebelumnya.');
     }
 
     cloneData() {
