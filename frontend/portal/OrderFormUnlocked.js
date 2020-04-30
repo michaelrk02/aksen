@@ -20,7 +20,7 @@ export default class OrderFormUnlocked extends Component {
     }
 
     render() {
-        const categories = [{id: 'A0', name: 'Presale 1', price: 50000}, {id: 'A1', name: 'Presale 2', price: 75000}];
+        const categories = [{id: 'A0', name: 'Presale 1', price: 50000}, {id: 'A1', name: 'Presale 2', price: 75000}, {id: 'A3', name: 'Presale 3', price: 100000}];
         const formState = this.form.state;
         const formData = formState.formData;
 
@@ -32,6 +32,7 @@ export default class OrderFormUnlocked extends Component {
         }
 
         return $('div', {className: 'form-horizontal'}, [
+            $('p', null, 'Silakan mengisi form di bawah ini untuk melakukan pemesanan. Anda dapat menggunakan alamat e-mail yang sama jika ingin memesan lebih dari satu kali (dengan syarat harus menunggu beberapa jam atau menit untuk kembali melakukan pemesanan)'),
             $('div', {className: 'form-group'}, [
                 $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, ['E-mail:', $(RequiredField)])),
                 $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'input-group'}, [
@@ -107,7 +108,7 @@ export default class OrderFormUnlocked extends Component {
         formData.categoryID = e.target.value;
         formData.tickets = 0;
 
-        this.form.setState({ticketsAvailable: null, formData: formData});
+        this.form.setState({formData: formData});
     }
 
     onTicketsChange(e) {

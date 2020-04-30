@@ -2,17 +2,10 @@ import {Component} from 'react';
 
 export default class Window extends Component {
 
-    constructor(/* shown */ props) {
+    constructor(/* shown, onClose */ props) {
         super(props);
+
         this.onCloseClick = this.onCloseClick.bind(this);
-    }
-
-    open() {
-        this.props.shown = true;
-    }
-
-    close() {
-        this.props.shown = false;
     }
 
     render() {
@@ -38,15 +31,12 @@ export default class Window extends Component {
     }
 
     onCloseClick() {
-        const closeClickable = this._isCloseClickable();
-
-        if ((typeof(closeClickable) === 'boolean') && closeClickable) {
-            this.close();
+        if (typeof(this.props.onClose) === 'function') {
+            this.props.onClose();
         }
     }
 
     /* virtual { */
-    _isCloseClickable() {}
     _getSize() {}
     _getHeader() {}
     _getBody() {}
