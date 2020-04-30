@@ -1,3 +1,4 @@
+import {createElement as $} from 'react';
 import {Modal} from '../aksen.js';
 
 export default class CheckoutModal extends Modal.Window {

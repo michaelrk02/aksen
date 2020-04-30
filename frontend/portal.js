@@ -2,6 +2,7 @@ import 'core-js/stable';
 
 import './stylesheet.scss';
 
+import {createElement as $} from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {Header, Footer} from './aksen.js';

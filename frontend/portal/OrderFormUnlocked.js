@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import {Component, createElement as $} from 'react';
 import {Link} from 'react-router-dom';
 
 import {RequiredField, Loading} from '../aksen.js';

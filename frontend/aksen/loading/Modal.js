@@ -1,13 +1,10 @@
+import {createElement as $} from 'react';
 import Window from '../modal/Window.js';
 
 export default class Modal extends Window {
 
     constructor(/* shown, description */ props) {
         super(props)
-    }
-
-    _isCloseClickable() {
-        return false;
     }
 
     _getHeader() {
