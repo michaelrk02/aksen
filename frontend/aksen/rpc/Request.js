@@ -15,7 +15,7 @@ export default class Request {
                 xhr.setRequestHeader(header, headers[header]);
             }
         }
-        this.xhr.addEventListener('load', (() => {
+        xhr.addEventListener('load', (() => {
             if (this.callback != null) {
                 this.callback(new Response(this.xhr));
             }
@@ -29,7 +29,7 @@ export default class Request {
     }
 
     execute() {
-        this.xhr.send(this.args);
+        this.xhr.send(JSON.stringify(this.args));
         return this;
     }
 

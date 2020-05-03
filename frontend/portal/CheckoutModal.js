@@ -1,10 +1,13 @@
 import {createElement as $} from 'react';
-import {Modal} from '../aksen.js';
+import {RPC, Loading, Modal} from '../aksen.js';
 
 export default class CheckoutModal extends Modal.Window {
 
     constructor(/* page, email, tickets, categoryName, categoryPrice, priceTotal */ props) {
         super(props);
+        this.state = {
+            ordering: false
+        };
         this.page = this.props.page;
 
         this.onConfirmClick = this.onConfirmClick.bind(this);
@@ -12,8 +15,22 @@ export default class CheckoutModal extends Modal.Window {
 
     onConfirmClick() {
         if (window.confirm('Apakah anda yakin?')) {
-            window.alert('Selamat! anda telah melakukan pemesanan');
-            this.page.props.history.push('/');
+            const data = this.page.state.formData;
+            window.rpc.initiate('send_order_request', {
+                email: data.email,
+                orderDetails: data.orderDetails,
+                categoryID: data.categoryID,
+                tickets: data.tickets
+            }).then((res => {
+                this.setState({ordering: false});
+                if (res.code == 200) {
+                    window.alert('Form pemesanan berhasil dikirim! Tagihan telah kami kirim menuju e-mail anda (' + data.email + ')');
+                    this.page.props.history.push('/');
+                } else {
+                    window.alert('Terjadi kegagalan: ' + res.status + '. Mohon untuk dicoba lagi');
+                }
+            }).bind(this)).execute();
+            this.setState({ordering: true});
         }
     }
 
@@ -50,7 +67,11 @@ export default class CheckoutModal extends Modal.Window {
         return $('div', {className: 'columns'}, [
             $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-error btn-block', onClick: this.onCloseClick}, [$('i', {className: 'icon icon-cross'}), ' Tutup'])),
             $('div', {className: 'column col-4 hide-sm'}),
-            $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onConfirmClick}, ['Konfirmasi pemesanan ', $('i', {className: 'icon icon-check'})])),
+            $('div', {className: 'column col-4 col-sm-6'},
+                this.state.ordering ?
+                $('button', {className: 'btn btn-success btn-block', disabled: true}, $(Loading.Text, {description: 'Memesan ...'})) : 
+                $('button', {className: 'btn btn-success btn-block', onClick: this.onConfirmClick}, ['Konfirmasi ', $('i', {className: 'icon icon-check'})])
+            )
         ]);
     }
 

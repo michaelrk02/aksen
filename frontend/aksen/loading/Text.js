@@ -7,7 +7,7 @@ export default class Text extends Component {
     }
 
     render() {
-        return $('div', null, [
+        return $('span', null, [
             $('span', null, this.props.description),
             $('span', {className: 'loading', style: {marginLeft: '0.75rem'}})
         ]);
