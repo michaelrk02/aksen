@@ -1,6 +1,6 @@
 import {Component, createElement as $} from 'react';
 import {Link} from 'react-router-dom';
-import * as Aksen from '../aksen.js';
+import {rpc} from '../aksen.js';
 
 import OrderFormUnlocked from './OrderFormUnlocked.js';
 import OrderFormLocked from './OrderFormLocked.js';
@@ -11,12 +11,17 @@ export default class OrderForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ticketsAvailable: null,
+            ticketsAvailable: -1,
+            ticketsMax: null,
             formData: {
                 email: '',
                 emailConfirmation: '',
                 orderDetails: '',
-                categoryID: '',
+                category: {
+                    id: '',
+                    name: '',
+                    price: 0
+                },
                 tickets: 0
             },
             checkout: false
@@ -27,12 +32,37 @@ export default class OrderForm extends Component {
         this.onReturn = this.onReturn.bind(this);
     }
 
+    componentDidMount() {
+        rpc.aksen.initiate('GetMaxTickets').then((res => {
+            if (res.code == 200) {
+                this.setState({ticketsMax: res.value});
+            } else {
+                window.alert('Gagal mendapatkan jumlah tiket maksimum yang dapat dibeli: ' + res.status + '. Mohon coba lagi');
+                this.setState({ticketsMax: null});
+            }
+        }).bind(this)).execute();
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.formData.categoryID !== prevState.formData.categoryID) {
+        if (this.state.formData.category.id !== prevState.formData.category.id) {
             this.setState({ticketsAvailable: null});
-            window.setTimeout((() => {
-                this.setState({ticketsAvailable: 5});
-            }).bind(this), 3000);
+            rpc.aksen.initiate('GetAvailableTickets', {
+                categoryID: this.state.formData.category.id
+            }).then((res => {
+                if (res.code == 200) {
+                    this.setState({ticketsAvailable: res.value});
+                } else {
+                    window.alert('Gagal mendapatkan jumlah tiket tersedia: ' + res.status + '. Mohon coba lagi');
+
+                    const formData = this.cloneData();
+                    formData.category.id = '';
+                    formData.category.name = '';
+                    formData.category.price = 0;
+                    formData.tickets = 0;
+
+                    this.setState({ticketsAvailable: -1, formData: formData});
+                }
+            }).bind(this)).execute();
         }
     }
 
@@ -42,7 +72,7 @@ export default class OrderForm extends Component {
         const data = this.state.formData;
 
         return [
-            $(CheckoutModal, {shown: this.state.checkout, onClose: this.onCheckoutClose, page: this, email: data.email, tickets: data.tickets, categoryName: 'CNAME(' + data.categoryID + ')', categoryPrice: 'CPRICE(' + data.categoryPrice + ')', priceTotal: data.tickets + ' * CPRICE'}),
+            $(CheckoutModal, {shown: this.state.checkout, onClose: this.onCheckoutClose, page: this, email: data.email, orderDetails: data.orderDetails, tickets: data.tickets, category: data.category}),
             $('div', {className: 'container grid-md'}, [
                 $('div', {className: 'popup', style: {margin: '2rem'}}, [
                     $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk memesan tiket'),
@@ -59,6 +89,10 @@ export default class OrderForm extends Component {
 
     onOrder() {
         const formData = this.state.formData;
+        if (formData.email === '') {
+            window.alert('E-mail tidak boleh kosong!');
+            return;
+        }
         if (formData.email !== formData.emailConfirmation) {
             window.alert('Mohon cek e-mail anda sekali lagi');
             return;
@@ -67,8 +101,12 @@ export default class OrderForm extends Component {
             window.alert('Tiket yang dibeli tidak boleh 0!');
             return;
         }
-        if (formData.tickets > parseInt(this.ticketsAvailable)) {
+        if (formData.tickets > parseInt(this.state.ticketsAvailable)) {
             window.alert('Tiket yang dibeli tidak boleh lebih dari tiket yang tersedia! (' + parseInt(this.ticketsAvailable) + ')');
+            return;
+        }
+        if (formData.tickets > parseInt(this.state.ticketsMax)) {
+            window.alert('Anda hanya dapat membeli maksimal sebanyak ' + parseInt(this.state.ticketsMax) + ' tiket');
             return;
         }
         this.setState({checkout: true});

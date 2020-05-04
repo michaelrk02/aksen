@@ -5,7 +5,7 @@ import './stylesheet.scss';
 import {createElement as $} from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
-import {RPC, Header, Footer} from './aksen.js';
+import {RPC, Header, Footer, initRPC} from './aksen.js';
 
 import Landing from './portal/Landing.js';
 import Order from './portal/Order.js';
@@ -18,7 +18,7 @@ window.addEventListener('load', () => {
     body.className = 'bg-gray';
 
     const app = document.getElementById('app');
-    window.rpc = new RPC.Channel(app.getAttribute('data-rpc'));
+    initRPC(app.getAttribute('data-rpc'));
 
     const router = $(Router, {basename: app.getAttribute('data-basename')}, [
         $('div', {className: 'app-container'}, [

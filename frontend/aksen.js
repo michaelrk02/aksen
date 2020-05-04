@@ -7,5 +7,17 @@ import Footer from './aksen/Footer.js';
 import Sidebar from './aksen/Sidebar.js';
 import RequiredField from './aksen/RequiredField.js';
 
-export {RPC, Loading, Modal, Header, Footer, Sidebar, RequiredField};
+const rpc = {
+    aksen: null,
+    portal: null,
+    admin: null
+};
+
+function initRPC(rpcURL) {
+    rpc.aksen = new RPC.Channel(rpcURL + 'aksen/');
+    rpc.portal = new RPC.Channel(rpcURL + 'portal/');
+    rpc.admin = new RPC.Channel(rpcURL + 'admin/');
+}
+
+export {RPC, Loading, Modal, Header, Footer, Sidebar, RequiredField, initRPC, rpc};
 

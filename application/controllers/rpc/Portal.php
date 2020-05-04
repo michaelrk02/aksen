@@ -2,18 +2,23 @@
 
 class Portal extends CI_Controller {
 
-    public function send_order_request() {
-        $_POST = json_decode($this->input->raw_input_stream, TRUE);
+    public function __construct() {
+        parent::__construct();
+        $this->load->library('rpc');
 
-        $email = $this->input->post('email');
-        $order_details = $this->input->post('orderDetails');
-        $category_id = $this->input->post('categoryID');
-        $tickets = $this->input->post('tickets');
+        $this->rpc->init();
+    }
+
+    public function SendOrderRequest() {
+        $email = $this->rpc->param('email');
+        $order_details = $this->rpc->param('orderDetails');
+        $category_id = $this->rpc->param('categoryID');
+        $tickets = $this->rpc->param('tickets');
 
         if ($tickets > 0) {
-            $this->output->set_status_header(200);
+            $this->rpc->reply();
         } else {
-            $this->output->set_status_header(400, 'tiket tidak boleh 0!');
+            $this->rpc->error('tiket tidak boleh 0!');
         }
     }
 

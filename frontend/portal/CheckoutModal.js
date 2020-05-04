@@ -1,9 +1,9 @@
 import {createElement as $} from 'react';
-import {RPC, Loading, Modal} from '../aksen.js';
+import {Loading, Modal, rpc} from '../aksen.js';
 
 export default class CheckoutModal extends Modal.Window {
 
-    constructor(/* page, email, tickets, categoryName, categoryPrice, priceTotal */ props) {
+    constructor(/* page, email, orderDetails, tickets, category */ props) {
         super(props);
         this.state = {
             ordering: false
@@ -16,10 +16,10 @@ export default class CheckoutModal extends Modal.Window {
     onConfirmClick() {
         if (window.confirm('Apakah anda yakin?')) {
             const data = this.page.state.formData;
-            window.rpc.initiate('send_order_request', {
+            rpc.portal.initiate('SendOrderRequest', {
                 email: data.email,
                 orderDetails: data.orderDetails,
-                categoryID: data.categoryID,
+                categoryID: data.category.id,
                 tickets: data.tickets
             }).then((res => {
                 this.setState({ordering: false});
@@ -47,19 +47,23 @@ export default class CheckoutModal extends Modal.Window {
                     $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, this.props.email))
                 ]),
                 $('div', {className: 'form-group'}, [
+                    $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Keterangan pemesanan:')),
+                    $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold text-italic'}, this.props.orderDetails))
+                ]),
+                $('div', {className: 'form-group'}, [
                     $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Jumlah tiket:')),
                     $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, this.props.tickets))
                 ]),
                 $('div', {className: 'form-group'}, [
                     $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Kategori tiket:')),
-                    $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, this.props.categoryName + ' @ IDR' + this.props.categoryPrice))
+                    $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, this.props.category.name + ' @ IDR' + this.props.category.price))
                 ]),
                 $('div', {className: 'form-group'}, [
                     $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Total yang harus dibayar')),
-                    $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, 'IDR' + this.props.priceTotal + ' plus kode unik (0-999)'))
+                    $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, 'IDR' + (this.props.category.price * this.props.tickets) + ' plus kode unik (0-999)'))
                 ])
             ]),
-            $('p', null, ['Apabila sudah benar, silakan klik tombol ', $('b', null, 'Konfirmasi pemesanan'), ' untuk langsung memesan tiket. Detail pemesanan tersebut tidak dapat diganti lagi setelah melakukan pemesanan'])
+            $('p', {style: {marginTop: '2rem'}}, ['Apabila sudah benar, silakan klik tombol ', $('b', null, 'Konfirmasi'), ' untuk langsung memesan tiket. Detail pemesanan tersebut tidak dapat diganti lagi setelah melakukan pemesanan'])
         ];
     }
 
