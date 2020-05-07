@@ -1,4 +1,6 @@
 application/cache/
 application/logs/
 frontend/node_modules/
-build/
+public/*.app.js
+presets/production/
+*.tar.gz
