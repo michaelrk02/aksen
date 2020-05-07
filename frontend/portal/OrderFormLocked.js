@@ -6,13 +6,21 @@ export default class OrderFormLocked extends Component {
     constructor(/* form, duration */ props) {
         super(props);
         this.state = {
-            timeLeft: props.duration
+            timeLeft: this.props.duration
         };
+        this.page = this.props.form;
+
+        this.countdown = null;
     }
 
     componentDidMount() {
-        window.setInterval((() => {
-            this.setState({timeLeft: this.state.timeLeft - 1});
+        this.countdown = window.setInterval((() => {
+            if (this.state.timeLeft > 0) {
+                this.setState({timeLeft: this.state.timeLeft - 1});
+            } else {
+                window.clearInterval(this.countdown);
+                this.page.determineLock();
+            }
         }).bind(this), 1000);
     }
 

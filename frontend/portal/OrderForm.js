@@ -31,25 +31,10 @@ export default class OrderForm extends Component {
         this.onOrder = this.onOrder.bind(this);
         this.onCheckoutClose = this.onCheckoutClose.bind(this);
         this.onReturn = this.onReturn.bind(this);
-
-        if (window.orderInitiated === false) {
-            this.props.history.replace('/order');
-            return;
-        }
-        window.orderInitiated = false;
     }
 
     componentDidMount() {
-        rpc.portal.initiate('GetLockDuration').then((res => {
-            if (res.code == 200) {
-                this.setState({lockDuration: res.value});
-                if (res.value == 0) {
-                    this.initMaxTickets();
-                }
-            } else {
-                window.alert('Gagal menghubungi server: ' + res.status + '. Mohon coba lagi');
-            }
-        }).bind(this)).execute();
+        this.determineLock();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -94,6 +79,19 @@ export default class OrderForm extends Component {
                 ])
             ])
         ];
+    }
+
+    determineLock() {
+        rpc.portal.initiate('GetLockDuration').then((res => {
+            if (res.code == 200) {
+                this.setState({lockDuration: res.value});
+                if (res.value == 0) {
+                    this.initMaxTickets();
+                }
+            } else {
+                window.alert('Gagal menghubungi server: ' + res.status + '. Mohon coba lagi');
+            }
+        }).bind(this)).execute();
     }
 
     initMaxTickets() {

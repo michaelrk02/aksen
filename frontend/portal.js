@@ -13,7 +13,6 @@ import OrderInvoiceView from './portal/OrderInvoiceView.js';
 import OrderTickets from './portal/OrderTickets.js';
 import OrderTicketsView from './portal/OrderTicketsView.js';
 
-window.orderInitiated = false;
 window.accessInvoiceID = '';
 
 window.addEventListener('load', () => {
