@@ -9,6 +9,10 @@ class Portal extends CI_Controller {
         $this->rpc->init();
     }
 
+    public function GetLockDuration() {
+        $this->rpc->reply(3 * 60 * 60);
+    }
+
     public function SendOrderRequest() {
         $email = $this->rpc->param('email');
         $order_details = $this->rpc->param('orderDetails');

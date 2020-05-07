@@ -5,10 +5,28 @@ export default class OrderFormLocked extends Component {
 
     constructor(/* form, duration */ props) {
         super(props);
+        this.state = {
+            timeLeft: props.duration
+        };
+    }
+
+    componentDidMount() {
+        window.setInterval((() => {
+            this.setState({timeLeft: this.state.timeLeft - 1});
+        }).bind(this), 1000);
     }
 
     render() {
-        return $('div', null, 'Form locked');
+        const hours = Math.floor(this.state.timeLeft / 3600);
+        const minutes = Math.floor(this.state.timeLeft / 60) % 60;
+        const seconds = Math.floor(this.state.timeLeft) % 60;
+
+        return $('div', {className: 'empty'}, [
+            $('div', {className: 'empty-icon'}, $('i', {className: 'icon icon-stop icon-4x'})),
+            $('p', {className: 'empty-title h5'}, 'Form terkunci sementara'),
+            $('p', {className: 'empty-subtitle'}, 'Anda telah melakukan pemesanan beberapa waktu yang lalu. Silakan tunggu beberapa waktu lagi untuk dapat memesan. Anda diperbolehkan memesan lagi dalam:'),
+            $('div', {className: 'empty-action'}, $('h5', {className: 'label'}, hours + ' jam ' + minutes + ' menit ' + seconds + ' detik'))
+        ]);
     }
 
 }

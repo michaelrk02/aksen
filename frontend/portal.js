@@ -1,7 +1,5 @@
 import 'core-js/stable';
 
-import './stylesheet.scss';
-
 import {createElement as $} from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
@@ -11,7 +9,12 @@ import Landing from './portal/Landing.js';
 import Order from './portal/Order.js';
 import OrderForm from './portal/OrderForm.js';
 import OrderInvoice from './portal/OrderInvoice.js';
-import OrderTicket from './portal/OrderTicket.js';
+import OrderInvoiceView from './portal/OrderInvoiceView.js';
+import OrderTickets from './portal/OrderTickets.js';
+import OrderTicketsView from './portal/OrderTicketsView.js';
+
+window.orderInitiated = false;
+window.accessInvoiceID = '';
 
 window.addEventListener('load', () => {
     const body = document.getElementById('body');
@@ -28,7 +31,9 @@ window.addEventListener('load', () => {
                 $(Route, {exact: true, path: '/order', component: Order}),
                 $(Route, {exact: true, path: '/order/form', component: OrderForm}),
                 $(Route, {exact: true, path: '/order/invoice', component: OrderInvoice}),
-                $(Route, {exact: true, path: '/order/ticket', component: OrderTicket})
+                $(Route, {exact: true, path: '/order/invoice/view', component: OrderInvoiceView}),
+                $(Route, {exact: true, path: '/order/tickets', component: OrderTickets}),
+                $(Route, {exact: true, path: '/order/tickets/view', component: OrderTicketsView})
             ]),
             $(Footer)
         ]),

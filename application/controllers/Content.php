@@ -39,6 +39,8 @@ class Content extends CI_Controller {
         $cache_age = $this->input->get('cache');
         if (!empty($cache_age)) {
             $this->output->set_header('Cache-Control: max-age='.$cache_age);
+        } else {
+            $this->output->set_header('Cache-Control: no-cache');
         }
     }
 

@@ -1,6 +1,5 @@
 import {Component, createElement as $} from 'react';
 import {Link} from 'react-router-dom';
-import * as Aksen from '../aksen.js';
 
 export default class Landing extends Component {
 

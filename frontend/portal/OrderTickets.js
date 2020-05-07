@@ -1,7 +1,7 @@
 import {Component, createElement as $} from 'react';
 import {Link} from 'react-router-dom';
 
-export default class OrderInvoice extends Component {
+export default class OrderTickets extends Component {
 
     constructor(props) {
         super(props);
@@ -25,7 +25,7 @@ export default class OrderInvoice extends Component {
     render() {
         return $('div', {className: 'container grid-md'}, [
             $('div', {className: 'popup', style: {margin: '2rem'}}, [
-                $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk mengakses tagihan anda'),
+                $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk mengakses e-tiket anda'),
                 $('p', null, 'Silakan masukkan kode tagihan yang telah kami kirim melalui e-mail pada kotak di bawah'),
                 $('div', {className: 'form-horizontal'}, [
                     $('div', {className: 'form-group'}, [
@@ -44,7 +44,7 @@ export default class OrderInvoice extends Component {
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
                     $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
                     $('div', {className: 'column col-4 hide-sm'}),
-                    $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onViewClick}, ['Lihat tagihan ', $('i', {className: 'icon icon-arrow-right'})])),
+                    $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onViewClick}, ['Lihat e-tiket ', $('i', {className: 'icon icon-arrow-right'})])),
                 ])
             ])
         ]);
@@ -64,7 +64,7 @@ export default class OrderInvoice extends Component {
             return;
         }
         window.accessInvoiceID = this.state.invoiceID;
-        this.props.history.push('/order/invoice/view');
+        this.props.history.push('/order/tickets/view');
     }
 
 }

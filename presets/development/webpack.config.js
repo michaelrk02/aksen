@@ -1,9 +1,16 @@
 const path = require('path');
 
 module.exports = {
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+            automaticNameDelimiter: '-'
+        }
+    },
     entry: {
+        theme: './theme.js',
         portal: './portal.js',
-        admin: './admin.js',
+        admin: './admin.js'
     },
     output: {
         filename: '[name].app.js',

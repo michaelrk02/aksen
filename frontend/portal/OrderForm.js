@@ -11,6 +11,7 @@ export default class OrderForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            lockDuration: 0,
             ticketsAvailable: -1,
             ticketsMax: null,
             formData: {
@@ -30,15 +31,23 @@ export default class OrderForm extends Component {
         this.onOrder = this.onOrder.bind(this);
         this.onCheckoutClose = this.onCheckoutClose.bind(this);
         this.onReturn = this.onReturn.bind(this);
+
+        if (window.orderInitiated === false) {
+            this.props.history.replace('/order');
+            return;
+        }
+        window.orderInitiated = false;
     }
 
     componentDidMount() {
-        rpc.aksen.initiate('GetMaxTickets').then((res => {
+        rpc.portal.initiate('GetLockDuration').then((res => {
             if (res.code == 200) {
-                this.setState({ticketsMax: res.value});
+                this.setState({lockDuration: res.value});
+                if (res.value == 0) {
+                    this.initMaxTickets();
+                }
             } else {
-                window.alert('Gagal mendapatkan jumlah tiket maksimum yang dapat dibeli: ' + res.status + '. Mohon coba lagi');
-                this.setState({ticketsMax: null});
+                window.alert('Gagal menghubungi server: ' + res.status + '. Mohon coba lagi');
             }
         }).bind(this)).execute();
     }
@@ -67,8 +76,7 @@ export default class OrderForm extends Component {
     }
 
     render() {
-        const locked = false;
-        const lockDuration = 86400;
+        const locked = this.state.lockDuration != 0;
         const data = this.state.formData;
 
         return [
@@ -76,15 +84,27 @@ export default class OrderForm extends Component {
             $('div', {className: 'container grid-md'}, [
                 $('div', {className: 'popup', style: {margin: '2rem'}}, [
                     $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk memesan tiket'),
-                    (!locked ? $(OrderFormUnlocked, {form: this}) : $(OrderFormLocked, {form: this, duration: lockDuration})),
+                    $('p', null, 'Silakan mengisi form di bawah ini untuk melakukan pemesanan. Anda dapat menggunakan alamat e-mail yang sama jika ingin memesan lebih dari satu kali (dengan syarat harus menunggu beberapa jam atau menit untuk kembali melakukan pemesanan)'),
+                    (!locked ? $(OrderFormUnlocked, {form: this}) : $(OrderFormLocked, {form: this, duration: this.state.lockDuration})),
                     $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
                         $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block', onClick: this.onReturn}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
                         $('div', {className: 'column col-4 hide-sm'}),
-                        $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onOrder}, ['Pesan Tiket ', $('i', {className: 'icon icon-check'})])),
+                        $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', disabled: locked, onClick: this.onOrder}, ['Pesan Tiket ', $('i', {className: 'icon icon-check'})])),
                     ])
                 ])
             ])
         ];
+    }
+
+    initMaxTickets() {
+        rpc.aksen.initiate('GetMaxTickets').then((res => {
+            if (res.code == 200) {
+                this.setState({ticketsMax: res.value});
+            } else {
+                window.alert('Gagal mendapatkan jumlah tiket maksimum yang dapat dibeli: ' + res.status + '. Mohon coba lagi');
+                this.setState({ticketsMax: null});
+            }
+        }).bind(this)).execute();
     }
 
     onOrder() {
@@ -117,8 +137,10 @@ export default class OrderForm extends Component {
     }
 
     onReturn(e) {
-        if (!window.confirm('Apakah anda yakin? Form yang sudah anda isi akan kembali kosong jika anda kembali ke halaman sebelumnya.')) {
-            e.preventDefault();
+        if (this.state.lockDuration == 0) {
+            if (!window.confirm('Apakah anda yakin? Form yang sudah anda isi akan kembali kosong jika anda kembali ke halaman sebelumnya.')) {
+                e.preventDefault();
+            }
         }
     }
 

@@ -53,8 +53,5 @@ $route['default_controller'] = 'aksen';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-$route['portal/order'] = 'portal';
-$route['portal/order/form'] = 'fail/forbidden';
-$route['portal/order/invoice'] = 'portal';
-$route['portal/order/ticket'] = 'portal';
+$route['portal/(.+)'] = 'portal';
 
