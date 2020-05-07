@@ -35,9 +35,23 @@ $error-color: #FF2B2A;
 
 .popup {
     animation: animatezoom 0.6s;
-    padding: 2rem;
     background-color: white;
-    border-radius: 16px;
+}
+
+@media (max-width: $size-sm) {
+    .popup {
+        margin: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+}
+
+@media (min-width: $size-sm + 1) {
+    .popup {
+        margin: 2rem;
+        padding: 2rem;
+        border-radius: 16px;
+    }
 }
 
 .shadow-2 {

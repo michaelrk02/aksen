@@ -67,7 +67,7 @@ export default class OrderForm extends Component {
         return [
             $(CheckoutModal, {shown: this.state.checkout, onClose: this.onCheckoutClose, page: this, email: data.email, orderDetails: data.orderDetails, tickets: data.tickets, category: data.category}),
             $('div', {className: 'container grid-md'}, [
-                $('div', {className: 'popup', style: {margin: '2rem'}}, [
+                $('div', {className: 'popup'}, [
                     $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk memesan tiket'),
                     $('p', null, 'Silakan mengisi form di bawah ini untuk melakukan pemesanan. Anda dapat menggunakan alamat e-mail yang sama jika ingin memesan lebih dari satu kali (dengan syarat harus menunggu beberapa jam atau menit untuk kembali melakukan pemesanan)'),
                     (!locked ? $(OrderFormUnlocked, {form: this}) : $(OrderFormLocked, {form: this, duration: this.state.lockDuration})),

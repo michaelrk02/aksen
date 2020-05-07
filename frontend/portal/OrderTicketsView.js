@@ -23,7 +23,7 @@ export default class OrderTicketsView extends Component {
 
     render() {
         return $('div', {className: 'container grid-md'}, [
-            $('div', {className: 'popup', style: {margin: '2rem'}}, [
+            $('div', {className: 'popup'}, [
                 $('h5', {className: 'text-bold text-primary'}, 'E-tiket'),
                 $('p', null, 'Anda sedang melihat e-tiket anda dengan kode tagihan: ' + this.accessInvoiceID),
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [

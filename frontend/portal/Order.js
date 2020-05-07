@@ -15,7 +15,7 @@ export default class Order extends Component {
 
     render() {
         return $('div', {className: 'container grid-md'}, [
-            $('div', {className: 'popup', style: {margin: '2rem'}}, [
+            $('div', {className: 'popup'}, [
                 $('h5', {className: 'text-bold text-primary'}, 'Silakan pilih tindakan berikutnya'),
                 $('p', null, 'Apakah anda ingin memesan tiket, mengakses tagihan, atau mengakses e-tiket yang telah anda beli?'),
                 $('div', {className: 'form-group'}, [

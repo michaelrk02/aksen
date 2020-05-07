@@ -24,7 +24,7 @@ export default class OrderInvoice extends Component {
 
     render() {
         return $('div', {className: 'container grid-md'}, [
-            $('div', {className: 'popup', style: {margin: '2rem'}}, [
+            $('div', {className: 'popup'}, [
                 $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk mengakses tagihan anda'),
                 $('p', null, 'Silakan masukkan kode tagihan yang telah kami kirim melalui e-mail pada kotak di bawah'),
                 $('div', {className: 'form-horizontal'}, [

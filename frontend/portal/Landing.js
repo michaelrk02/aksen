@@ -9,7 +9,7 @@ export default class Landing extends Component {
 
     render() {
         return $('div', {className: 'container grid-md'}, [
-            $('div', {className: 'popup', style: {margin: '2rem'}}, [
+            $('div', {className: 'popup'}, [
                 $('h5', {className: 'text-bold text-primary'}, 'Selamat datang di portal pemesanan tiket Ajang Kreasi dan Seni SMA Negeri 3 Surakarta!'),
                 $('p', null, ['Silakan lanjut ke prosedur berikutnya dengan mengklik tombol ', $('b', null, 'Lanjut'), '. Jika terdapat masalah, silakan menghubungi panitia di nomor yang telah disediakan di bawah ini. Kami tunggu kedatangan anda di Ajang Kreasi dan Seni SMAN 3 Surakarta!']),
                 $('div', {className: 'form-group'}, [
