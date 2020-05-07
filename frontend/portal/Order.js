@@ -27,7 +27,7 @@ export default class Order extends Component {
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
                     $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
                     $('div', {className: 'column col-4 hide-sm'}),
-                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order/form', className: 'btn btn-success btn-block', disabled: this.state.orderInitiating}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})])),
+                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order/' + this.state.choiceID, className: 'btn btn-success btn-block', disabled: this.state.orderInitiating}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})])),
                 ])
             ])
         ]);
