@@ -59,38 +59,40 @@ export default class OrderFormUnlocked extends Component {
                 $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, ['E-mail:', $(RequiredField)])),
                 $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'input-group'}, [
                     $('span', {className: 'input-group-addon'}, '@'),
-                    $('input', {type: 'email', className: 'form-input', placeholder: 'E-mail', value: formData.email, onChange: this.onEmailChange})
+                    $('input', {id: '__email', type: 'email', className: 'form-input', placeholder: 'E-mail', maxLength: 254, value: formData.email, onChange: this.onEmailChange})
                 ])),
             ]),
             $('div', {className: 'form-group'}, [
                 $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, ['Ulangi e-mail:', $(RequiredField)])),
                 $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'input-group'}, [
                     $('span', {className: 'input-group-addon'}, '@'),
-                    $('input', {type: 'email', className: 'form-input', placeholder: 'Ulangi e-mail', value: formData.emailConfirmation, onChange: this.onEmailConfirmationChange})
+                    $('input', {id: '__emailConfirmation', type: 'email', className: 'form-input', placeholder: 'Ulangi e-mail', maxLength: 254, value: formData.emailConfirmation, onChange: this.onEmailConfirmationChange})
                 ])),
             ]),
             $('div', {className: 'form-group'}, [
                 $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Keterangan pemesanan:')),
                 $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'input-group'}, [
                     $('span', {className: 'input-group-addon'}, $('i', {className: 'icon icon-edit'})),
-                    $('input', {type: 'text', className: 'form-input', placeholder: 'Keterangan pemesanan (opsional)', value: formData.orderDetails, onChange: this.onOrderDetailsChange})
+                    $('input', {id: '__orderDetails', type: 'text', className: 'form-input', placeholder: 'Keterangan pemesanan (opsional)', maxLength: 200, value: formData.orderDetails, onChange: this.onOrderDetailsChange})
                 ])),
             ]),
             $('div', {className: 'form-group'}, [
                 $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, ['Pilih kategori tiket: ', $(RequiredField)])),
                 $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}},
                     this.state.categories === null ?
-                    $(Loading.Text) :
-                    this.state.categories.map((category => {
-                        const formState = this.form.state;
-                        const formData = formState.formData;
+                        $(Loading.Text) :
+                        this.state.categories.length == 0 ?
+                            $('i', null, '(semua kategori tiket terkunci)') :
+                            this.state.categories.map((category => {
+                                const formState = this.form.state;
+                                const formData = formState.formData;
 
-                        return $('div', null, $('label', {className: 'form-radio'}, [
-                            $('input', {type: 'radio', name: '__categoryID', value: category.id, checked: (formData.category.id === category.id), onChange: this.onCategoryChange, disabled: (formState.ticketsAvailable === null)}),
-                            $('i', {className: 'form-icon'}),
-                            ' ' + category.name + ' @ IDR' + category.price
-                        ]));
-                    }).bind(this))
+                                return $('div', null, $('label', {className: 'form-radio'}, [
+                                    $('input', {type: 'radio', name: '__categoryID', value: category.category_id, checked: (formData.category.category_id === category.category_id), onChange: this.onCategoryChange, disabled: (formState.ticketsAvailable === null)}),
+                                    $('i', {className: 'form-icon'}),
+                                    ' ' + category.name + ' @ IDR' + category.price
+                                ]));
+                            }).bind(this))
                 )
             ]),
             $('div', {className: 'form-group'}, [
@@ -106,7 +108,7 @@ export default class OrderFormUnlocked extends Component {
                 $('div', {className: 'col-9 col-sm-12 columns', style: {margin: 'auto 0px'}}, [
                     $('div', {className: 'column col-4 col-sm-9 input-group'}, [
                         $('button', {className: 'input-group-btn btn btn-primary', onClick: this.onTicketRemove}, $('i', {className: 'icon icon-minus'})),
-                        $('input', {type: 'number', className: 'form-input', value: formData.tickets, onChange: this.onTicketsChange}),
+                        $('input', {type: 'number', className: 'form-input', min: 0, max: Math.min((formState.ticketsAvailable === null) ? 0 : formState.ticketsAvailable, (formState.ticketsMax === null) ? 0 : formState.ticketsMax), value: formData.tickets, onChange: this.onTicketsChange}),
                         $('button', {className: 'input-group-btn btn btn-primary', onClick: this.onTicketAdd}, $('i', {className: 'icon icon-plus'}))
                     ]),
                     $('div', {className: 'column col-6 col-sm-3'}, $('button', {className: 'btn btn-primary', onClick: this.onResetTickets}, $('i', {className: 'icon icon-refresh'})))
@@ -138,7 +140,7 @@ export default class OrderFormUnlocked extends Component {
 
     onCategoryChange(e) {
         const formData = this.form.cloneData();
-        formData.category = this.state.categories.find(item => item.id === e.target.value);
+        formData.category = this.state.categories.find(item => item.category_id === e.target.value);
         formData.tickets = 0;
 
         this.form.setState({formData: formData});

@@ -18,8 +18,8 @@ export default class CheckoutModal extends Modal.Window {
             const data = this.page.state.formData;
             rpc.portal.initiate('SendOrderRequest', {
                 email: data.email,
-                orderDetails: data.orderDetails,
-                categoryID: data.category.id,
+                order_details: data.orderDetails,
+                category_id: data.category.category_id,
                 tickets: data.tickets
             }).then((res => {
                 this.setState({ordering: false});
@@ -59,7 +59,7 @@ export default class CheckoutModal extends Modal.Window {
                     $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, this.props.category.name + ' @ IDR' + this.props.category.price))
                 ]),
                 $('div', {className: 'form-group'}, [
-                    $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Total yang harus dibayar')),
+                    $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Total yang harus dibayar:')),
                     $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, 'IDR' + (this.props.category.price * this.props.tickets) + ' plus kode unik (0-999)'))
                 ])
             ]),

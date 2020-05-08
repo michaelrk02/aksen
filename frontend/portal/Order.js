@@ -14,15 +14,26 @@ export default class Order extends Component {
     }
 
     render() {
+        const choices = [
+            {id: 'form', text: 'Saya ingin memesan tiket'},
+            {id: 'invoice', text: 'Saya ingin melihat tagihan saya'},
+            {id: 'tickets', text: 'Saya ingin melihat e-tiket yang telah saya dapatkan'}
+        ];
+
         return $('div', {className: 'container grid-md'}, [
             $('div', {className: 'popup'}, [
                 $('h5', {className: 'text-bold text-primary'}, 'Silakan pilih tindakan berikutnya'),
                 $('p', null, 'Apakah anda ingin memesan tiket, mengakses tagihan, atau mengakses e-tiket yang telah anda beli?'),
                 $('div', {className: 'form-group'}, [
                     $('div', {className: 'text-bold'}, 'Pilih salah satu:'),
-                    $('label', {className: 'form-radio'}, [$('input', {type: 'radio', name: '__choiceID', value: 'form', checked: (this.state.choiceID === 'form'), onChange: this.onChoiceChange}), $('i', {className: 'form-icon'}), ' Saya ingin memesan tiket']),
-                    $('label', {className: 'form-radio'}, [$('input', {type: 'radio', name: '__choiceID', value: 'invoice', checked: (this.state.choiceID === 'invoice'), onChange: this.onChoiceChange}), $('i', {className: 'form-icon'}), ' Saya ingin mengakses tagihan saya']),
-                    $('label', {className: 'form-radio'}, [$('input', {type: 'radio', name: '__choiceID', value: 'tickets', checked: (this.state.choiceID === 'tickets'), onChange: this.onChoiceChange}), $('i', {className: 'form-icon'}), ' Saya ingin mengakses e-tiket yang telah saya dapatkan']),
+                    ...choices.map((item => {
+                        return $('label', {className: 'form-radio'}, [
+                            $('input', {type: 'radio', name: '__choiceID', value: item.id, checked: (this.state.choiceID === item.id), onChange: this.onChoiceChange}),
+                            $('i', {className: 'form-icon'}),
+                            ' ',
+                            $('span', {className: (this.state.choiceID === item.id ? 'text-bold' : '')}, item.text)
+                        ]);
+                    }).bind(this))
                 ]),
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
                     $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),

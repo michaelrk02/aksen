@@ -10,7 +10,7 @@ class Accesses_model extends CI_Model {
         $this->load->model('config_model');
 
         $id = md5($ip_address);
-        $duration = (int)$this->config_model->get('portal.order.cooldown');
+        $duration = (int)$this->config_model->get('order.cooldown');
 
         $result = $this->db->query('SELECT COUNT(*) AS `count` FROM `accesses` WHERE `ip_address` = ?', [$id]);
         if ($result->row_array(0)['count'] == 0) {

@@ -1,6 +1,6 @@
 import {Component, createElement as $} from 'react';
 import {Link} from 'react-router-dom';
-import {rpc} from '../aksen.js';
+import {Loading, rpc} from '../aksen.js';
 
 import OrderFormUnlocked from './OrderFormUnlocked.js';
 import OrderFormLocked from './OrderFormLocked.js';
@@ -11,7 +11,7 @@ export default class OrderForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            lockDuration: 0,
+            lockDuration: -1,
             ticketsAvailable: -1,
             ticketsMax: null,
             formData: {
@@ -38,10 +38,10 @@ export default class OrderForm extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.formData.category.id !== prevState.formData.category.id) {
+        if (this.state.formData.category.category_id !== prevState.formData.category.category_id) {
             this.setState({ticketsAvailable: null});
             rpc.aksen.initiate('GetAvailableTickets', {
-                categoryID: this.state.formData.category.id
+                category_id: this.state.formData.category.category_id
             }).then((res => {
                 if (res.code == 200) {
                     this.setState({ticketsAvailable: res.value});
@@ -49,7 +49,7 @@ export default class OrderForm extends Component {
                     window.alert('Gagal mendapatkan jumlah tiket tersedia: ' + res.status + '. Mohon coba lagi');
 
                     const formData = this.cloneData();
-                    formData.category.id = '';
+                    formData.category.category_id = '';
                     formData.category.name = '';
                     formData.category.price = 0;
                     formData.tickets = 0;
@@ -61,7 +61,7 @@ export default class OrderForm extends Component {
     }
 
     render() {
-        const locked = this.state.lockDuration != 0;
+        const locked = this.state.lockDuration > 0;
         const data = this.state.formData;
 
         return [
@@ -70,7 +70,11 @@ export default class OrderForm extends Component {
                 $('div', {className: 'popup'}, [
                     $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk memesan tiket'),
                     $('p', null, 'Silakan mengisi form di bawah ini untuk melakukan pemesanan. Anda dapat menggunakan alamat e-mail yang sama jika ingin memesan lebih dari satu kali (dengan syarat harus menunggu beberapa jam atau menit untuk kembali melakukan pemesanan)'),
-                    (!locked ? $(OrderFormUnlocked, {form: this}) : $(OrderFormLocked, {form: this, duration: this.state.lockDuration})),
+                    (!locked ?
+                        ((this.state.lockDuration === -1) ?
+                            $(Loading.Text, {description: 'Menghubungi server ...'}) :
+                            $(OrderFormUnlocked, {form: this})) :
+                        $(OrderFormLocked, {form: this, duration: this.state.lockDuration})),
                     $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
                         $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block', onClick: this.onReturn}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
                         $('div', {className: 'column col-4 hide-sm'}),
@@ -106,6 +110,22 @@ export default class OrderForm extends Component {
     }
 
     onOrder() {
+        const formInputs = [
+            document.getElementById('__email'),
+            document.getElementById('__emailConfirmation'),
+            document.getElementById('__orderDetails')
+        ];
+        let validationSucceeded = true;
+        for (let input of formInputs) {
+            if (!input.reportValidity()) {
+                validationSucceeded = false;
+                break;
+            }
+        }
+        if (!validationSucceeded) {
+            return;
+        }
+
         const formData = this.state.formData;
         if (formData.email === '') {
             window.alert('E-mail tidak boleh kosong!');
@@ -113,10 +133,6 @@ export default class OrderForm extends Component {
         }
         if (formData.email !== formData.emailConfirmation) {
             window.alert('Mohon cek e-mail anda sekali lagi');
-            return;
-        }
-        if (formData.tickets <= 0) {
-            window.alert('Tiket yang dibeli tidak boleh 0!');
             return;
         }
         if (formData.tickets > parseInt(this.state.ticketsAvailable)) {
@@ -127,6 +143,7 @@ export default class OrderForm extends Component {
             window.alert('Anda hanya dapat membeli maksimal sebanyak ' + parseInt(this.state.ticketsMax) + ' tiket');
             return;
         }
+
         this.setState({checkout: true});
     }
 
