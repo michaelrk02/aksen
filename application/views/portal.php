@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Portal Pemesanan Tiket AKSEN</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
         <script async src="<?php echo site_url('content/app/vendors-admin-portal').'?cache=86400'; ?>"></script>
         <script async src="<?php echo site_url('content/app/vendors-portal').'?cache=86400'; ?>"></script>
         <script async src="<?php echo site_url('content/app/theme').'?cache=86400'; ?>"></script>
