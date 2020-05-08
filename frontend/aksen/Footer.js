@@ -9,7 +9,7 @@ export default class Footer extends Component {
     render() {
         return $('footer', {className: 'bg-dark'}, [
             $('div', {className: 'text-center', style: {padding: '0.5rem'}}, [
-                $('span', {dangerouslySetInnerHTML: {__html: 'Copyright &copy; 2020-present, Michael R. Krisnadhi'}})
+                $('span', {dangerouslySetInnerHTML: {__html: 'Copyright &copy; 2020, AKSEN SMAGA'}})
             ])
         ]);
     }
