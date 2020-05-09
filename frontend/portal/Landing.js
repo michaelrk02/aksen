@@ -43,9 +43,7 @@ export default class Landing extends Component {
                     $('div', {className: 'text-bold'}, ['Instagram: ', $('a', {href: 'https://www.instagram.com/aksensmaga', target: '_blank'}, '@aksensmaga')])
                 ]),
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
-                    $('div', {className: 'column col-4 col-sm-6'}),
-                    $('div', {className: 'column col-4 hide-sm'}),
-                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-success btn-block'}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})])),
+                    $('div', {className: 'column col-4 col-sm-6 col-ml-auto'}, $(Link, {to: '/order', className: 'btn btn-success btn-block'}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})]))
                 ])
             ])
         ]);

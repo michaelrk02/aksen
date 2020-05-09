@@ -1,5 +1,5 @@
 import {createElement as $} from 'react';
-import {Loading, Modal, rpc} from '../aksen.js';
+import {Loading, Modal, rpc, idr} from '../aksen.js';
 
 export default class CheckoutModal extends Modal.Window {
 
@@ -60,7 +60,7 @@ export default class CheckoutModal extends Modal.Window {
                 ]),
                 $('div', {className: 'form-group'}, [
                     $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, 'Total yang harus dibayar:')),
-                    $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, 'IDR' + (this.props.category.price * this.props.tickets) + ' plus kode unik (0-999)'))
+                    $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'text-bold'}, idr(this.props.category.price * this.props.tickets) + ' + nomor pemesanan (0-999)'))
                 ])
             ]),
             $('p', {style: {marginTop: '2rem'}}, ['Apabila sudah benar, silakan klik tombol ', $('b', null, 'Konfirmasi'), ' untuk langsung memesan tiket. Detail pemesanan tersebut tidak dapat diganti lagi setelah melakukan pemesanan'])
@@ -69,12 +69,11 @@ export default class CheckoutModal extends Modal.Window {
 
     _getFooter() {
         return $('div', {className: 'columns'}, [
-            $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-error btn-block', onClick: this.onCloseClick}, [$('i', {className: 'icon icon-cross'}), ' Tutup'])),
-            $('div', {className: 'column col-4 hide-sm'}),
-            $('div', {className: 'column col-4 col-sm-6'},
+            $('div', {className: 'column col-4 col-sm-6 col-mr-auto'}, $('button', {className: 'btn btn-error btn-block', onClick: this.onCloseClick}, [$('i', {className: 'icon icon-cross'}), ' Tutup'])),
+            $('div', {className: 'column col-4 col-sm-6 col-ml-auto'},
                 this.state.ordering ?
-                $('button', {className: 'btn btn-success btn-block', disabled: true}, $(Loading.Text, {description: 'Memesan ...'})) : 
-                $('button', {className: 'btn btn-success btn-block', onClick: this.onConfirmClick}, ['Konfirmasi ', $('i', {className: 'icon icon-check'})])
+                    $('button', {className: 'btn btn-success btn-block', disabled: true}, $(Loading.Text, {description: 'Memesan ...'})) : 
+                    $('button', {className: 'btn btn-success btn-block', onClick: this.onConfirmClick}, ['Konfirmasi ', $('i', {className: 'icon icon-check'})])
             )
         ]);
     }

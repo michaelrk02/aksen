@@ -16,11 +16,32 @@ class Aksen extends CI_Controller {
         $this->rpc->reply($categories);
     }
 
+    public function GetTicketPrice() {
+        $this->load->model('categories_model');
+
+        $category_id = $this->rpc->param('category_id');
+        if (!empty($category_id)) {
+            $category = $this->categories_model->get($category_id, 'price');
+            if (isset($category)) {
+                $this->rpc->reply($category['price']);
+            } else {
+                $this->rpc->error('kategori tiket tidak ditemukan', 404);
+            }
+        } else {
+            $this->rpc->error();
+        }
+    }
+
     public function GetAvailableTickets() {
         $this->load->model('categories_model');
 
-        $available = $this->categories_model->get_available($this->rpc->param('category_id'));
-        $this->rpc->reply($available);
+        $category_id = $this->rpc->param('category_id');
+        if (!empty($category_id)) {
+            $available = $this->categories_model->get_available($category_id);
+            $this->rpc->reply($available);
+        } else {
+            $this->rpc->error();
+        }
     }
 
     public function GetMaxTickets() {

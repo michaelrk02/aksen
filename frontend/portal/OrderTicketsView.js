@@ -9,16 +9,11 @@ export default class OrderTicketsView extends Component {
 
         this.onFinishClick = this.onFinishClick.bind(this);
 
-        if (window.accessInvoiceID === '') {
+        if (window.sessionStorage.getItem('aksen.access_invoice_id_history') === null) {
             this.props.history.replace('/order/tickets');
             return;
         }
-        this.accessInvoiceID = window.accessInvoiceID;
-        window.accessInvoiceID = '';
-    }
-
-    componentDidMount() {
-        window.sessionStorage.setItem('aksen.access_invoice_id_history', this.accessInvoiceID);
+        this.accessInvoiceID = window.sessionStorage.getItem('aksen.access_invoice_id_history');
     }
 
     render() {
@@ -27,9 +22,8 @@ export default class OrderTicketsView extends Component {
                 $('h5', {className: 'text-bold text-primary'}, 'E-tiket'),
                 $('p', null, 'Anda sedang melihat e-tiket anda dengan kode tagihan: ' + this.accessInvoiceID),
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
-                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order/tickets', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
-                    $('div', {className: 'column col-4 hide-sm'}),
-                    $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onFinishClick}, ['Selesai ', $('i', {className: 'icon icon-check'})])),
+                    $('div', {className: 'column col-4 col-sm-6 col-mr-auto'}, $(Link, {to: '/order/tickets', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
+                    $('div', {className: 'column col-4 col-sm-6 col-ml-auto'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onFinishClick}, ['Selesai ', $('i', {className: 'icon icon-check'})]))
                 ])
             ])
         ]);

@@ -76,6 +76,28 @@ class Portal extends CI_Controller {
         }
     }
 
+    public function GetInvoiceDetails() {
+        $invoice_id = $this->rpc->param('invoice_id');
+
+        if (!empty($invoice_id)) {
+            $this->load->model('invoices_model');
+
+            $invoice = $this->invoices_model->get($invoice_id, 'email,order_details,category_id,tickets,order_time,order_id,expire_time');
+            if (isset($invoice)) {
+                $expire_time = new DateTime($invoice['expire_time']);
+                $expire_time = $expire_time->getTimestamp();
+                $now = time();
+                $invoice['expire_duration'] = $expire_time - $now;
+
+                $this->rpc->reply($invoice);
+            } else {
+                $this->rpc->error('tagihan tidak ditemukan', 404);
+            }
+        } else {
+            $this->rpc->error();
+        }
+    }
+
 }
 
 ?>

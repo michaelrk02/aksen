@@ -19,7 +19,7 @@ export default class OrderForm extends Component {
                 emailConfirmation: '',
                 orderDetails: '',
                 category: {
-                    id: '',
+                    category_id: '',
                     name: '',
                     price: 0
                 },
@@ -76,9 +76,8 @@ export default class OrderForm extends Component {
                             $(OrderFormUnlocked, {form: this})) :
                         $(OrderFormLocked, {form: this, duration: this.state.lockDuration})),
                     $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
-                        $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block', onClick: this.onReturn}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
-                        $('div', {className: 'column col-4 hide-sm'}),
-                        $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', disabled: locked, onClick: this.onOrder}, ['Pesan Tiket ', $('i', {className: 'icon icon-check'})])),
+                        $('div', {className: 'column col-4 col-sm-6 col-mr-auto'}, $(Link, {to: '/order', className: 'btn btn-error btn-block', onClick: this.onReturn}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
+                        $('div', {className: 'column col-4 col-sm-6 col-ml-auto'}, $('button', {className: 'btn btn-success btn-block', disabled: locked, onClick: this.onOrder}, ['Pesan Tiket ', $('i', {className: 'icon icon-check'})]))
                     ])
                 ])
             ])
@@ -110,11 +109,7 @@ export default class OrderForm extends Component {
     }
 
     onOrder() {
-        const formInputs = [
-            document.getElementById('__email'),
-            document.getElementById('__emailConfirmation'),
-            document.getElementById('__orderDetails')
-        ];
+        const formInputs = ['email', 'emailConfirmation', 'orderDetails', 'tickets'].map(id => document.getElementById('__' + id));
         let validationSucceeded = true;
         for (let input of formInputs) {
             if (!input.reportValidity()) {
@@ -127,12 +122,16 @@ export default class OrderForm extends Component {
         }
 
         const formData = this.state.formData;
-        if (formData.email === '') {
-            window.alert('E-mail tidak boleh kosong!');
-            return;
-        }
         if (formData.email !== formData.emailConfirmation) {
             window.alert('Mohon cek e-mail anda sekali lagi');
+            return;
+        }
+        if (formData.category.category_id === '') {
+            window.alert('Silakan pilih kategori tiket terlebih dahulu');
+            return;
+        }
+        if (formData.tickets <= 0) {
+            window.alert('Silakan masukkan jumlah tiket yang akan anda beli');
             return;
         }
         if (formData.tickets > parseInt(this.state.ticketsAvailable)) {

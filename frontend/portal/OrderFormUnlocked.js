@@ -1,7 +1,7 @@
 import {Component, createElement as $} from 'react';
 import {Link} from 'react-router-dom';
 
-import {RequiredField, Loading, rpc} from '../aksen.js';
+import {RequiredField, Loading, rpc, idr} from '../aksen.js';
 
 export default class OrderFormUnlocked extends Component {
 
@@ -59,14 +59,14 @@ export default class OrderFormUnlocked extends Component {
                 $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, ['E-mail:', $(RequiredField)])),
                 $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'input-group'}, [
                     $('span', {className: 'input-group-addon'}, '@'),
-                    $('input', {id: '__email', type: 'email', className: 'form-input', placeholder: 'E-mail', maxLength: 254, value: formData.email, onChange: this.onEmailChange})
+                    $('input', {id: '__email', type: 'email', className: 'form-input', required: true, placeholder: 'E-mail', maxLength: 254, value: formData.email, onChange: this.onEmailChange})
                 ])),
             ]),
             $('div', {className: 'form-group'}, [
                 $('div', {className: 'col-3 col-sm-12'}, $('label', {className: 'form-label'}, ['Ulangi e-mail:', $(RequiredField)])),
                 $('div', {className: 'col-9 col-sm-12', style: {margin: 'auto 0px'}}, $('div', {className: 'input-group'}, [
                     $('span', {className: 'input-group-addon'}, '@'),
-                    $('input', {id: '__emailConfirmation', type: 'email', className: 'form-input', placeholder: 'Ulangi e-mail', maxLength: 254, value: formData.emailConfirmation, onChange: this.onEmailConfirmationChange})
+                    $('input', {id: '__emailConfirmation', type: 'email', className: 'form-input', required: true, placeholder: 'Ulangi e-mail', maxLength: 254, value: formData.emailConfirmation, onChange: this.onEmailConfirmationChange})
                 ])),
             ]),
             $('div', {className: 'form-group'}, [
@@ -90,7 +90,7 @@ export default class OrderFormUnlocked extends Component {
                                 return $('div', null, $('label', {className: 'form-radio'}, [
                                     $('input', {type: 'radio', name: '__categoryID', value: category.category_id, checked: (formData.category.category_id === category.category_id), onChange: this.onCategoryChange, disabled: (formState.ticketsAvailable === null)}),
                                     $('i', {className: 'form-icon'}),
-                                    ' ' + category.name + ' @ IDR' + category.price
+                                    ' ' + category.name + ' @ ' + idr(category.price)
                                 ]));
                             }).bind(this))
                 )
@@ -108,7 +108,7 @@ export default class OrderFormUnlocked extends Component {
                 $('div', {className: 'col-9 col-sm-12 columns', style: {margin: 'auto 0px'}}, [
                     $('div', {className: 'column col-4 col-sm-9 input-group'}, [
                         $('button', {className: 'input-group-btn btn btn-primary', onClick: this.onTicketRemove}, $('i', {className: 'icon icon-minus'})),
-                        $('input', {type: 'number', className: 'form-input', min: 0, max: Math.min((formState.ticketsAvailable === null) ? 0 : formState.ticketsAvailable, (formState.ticketsMax === null) ? 0 : formState.ticketsMax), value: formData.tickets, onChange: this.onTicketsChange}),
+                        $('input', {id: '__tickets', type: 'number', className: 'form-input', disabled: (formData.category.category_id === ''), min: 0, max: Math.min((formState.ticketsAvailable === null) ? 0 : formState.ticketsAvailable, (formState.ticketsMax === null) ? 0 : formState.ticketsMax), value: formData.tickets, onChange: this.onTicketsChange}),
                         $('button', {className: 'input-group-btn btn btn-primary', onClick: this.onTicketAdd}, $('i', {className: 'icon icon-plus'}))
                     ]),
                     $('div', {className: 'column col-6 col-sm-3'}, $('button', {className: 'btn btn-primary', onClick: this.onResetTickets}, $('i', {className: 'icon icon-refresh'})))

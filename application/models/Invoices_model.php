@@ -15,21 +15,30 @@ class Invoices_model extends CI_Model {
             $invoice_id = random_string('alnum', 16);
         } while ($this->exists($invoice_id));
 
+        $order_id = $this->config_model->get('order.next_id');
+        $order_id = (int)$order_id;
+        $this->config_model->set('order.next_id', $order_id + 1);
+
         $expire = $this->config_model->get('order.expire');
         $expire = $expire === NULL ? 24 : $expire;
-        $expire = $expire * 3600;
+        $expire = $expire * 86400;
         $expire = (int)$expire;
 
         $this->db->query(
             'INSERT INTO `invoices`
-                (`invoice_id`, `email`, `order_details`, `category_id`, `tickets`, `order_time`, `expire_time`)
-                VALUES (?, ?, ?, ?, ?, NOW(), ADDTIME(NOW(), SEC_TO_TIME(?)))',
-            [$invoice_id, $email, $order_details, $category_id, $tickets, $expire]);
+                (`invoice_id`, `email`, `order_details`, `category_id`, `tickets`, `order_time`, `order_id`, `expire_time`)
+                VALUES (?, ?, ?, ?, ?, NOW(), ?, ADDTIME(NOW(), SEC_TO_TIME(?)))',
+            [$invoice_id, $email, $order_details, $category_id, $tickets, $order_id, $expire]);
     }
 
     public function exists($invoice_id) {
         $result = $this->db->query('SELECT COUNT(*) AS `count` FROM `invoices` WHERE `invoice_id` = ?', [$invoice_id]);
         return $result->row_array(0)['count'] != 0;
+    }
+
+    public function get($invoice_id, $columns = '*') {
+        $result = $this->db->select($columns)->from('invoices')->where('invoice_id', $invoice_id)->get();
+        return $result->row_array(0);
     }
 
 }

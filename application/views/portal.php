@@ -9,6 +9,6 @@
         <script async src="<?php echo site_url('content/app/portal').'?cache=0'; ?>"></script>
     </head>
     <body id="body">
-        <div id="app" data-basename="<?php echo $route_basename; ?>" data-rpc="<?php echo site_url('rpc/'); ?>">Loading application ...</div>
+        <div id="app" data-baseurl="<?php echo base_url(); ?>" data-basename="<?php echo $route_basename; ?>" data-rpc="<?php echo site_url('rpc/'); ?>">Loading application ...</div>
     </body>
 </html>

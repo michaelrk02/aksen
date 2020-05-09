@@ -42,9 +42,8 @@ export default class OrderTickets extends Component {
                     ])
                 ]),
                 $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
-                    $('div', {className: 'column col-4 col-sm-6'}, $(Link, {to: '/order', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
-                    $('div', {className: 'column col-4 hide-sm'}),
-                    $('div', {className: 'column col-4 col-sm-6'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onViewClick}, ['Lihat e-tiket ', $('i', {className: 'icon icon-arrow-right'})])),
+                    $('div', {className: 'column col-4 col-sm-6 col-mr-auto'}, $(Link, {to: '/order', className: 'btn btn-error btn-block'}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
+                    $('div', {className: 'column col-4 col-sm-6 col-ml-auto'}, $('button', {className: 'btn btn-success btn-block', onClick: this.onViewClick}, ['Lihat e-tiket ', $('i', {className: 'icon icon-arrow-right'})]))
                 ])
             ])
         ]);
@@ -63,7 +62,7 @@ export default class OrderTickets extends Component {
             window.alert('Kode tagihan tidak boleh kosong!');
             return;
         }
-        window.accessInvoiceID = this.state.invoiceID;
+        window.sessionStorage.setItem('aksen.access_invoice_id_history', this.state.invoiceID);
         this.props.history.push('/order/tickets/view');
     }
 

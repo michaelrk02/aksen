@@ -1,14 +1,29 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Frontend application for AKSEN SMAGA",
   "main": "index.js",
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "*",
+    "@babel/preset-env": "*",
+    "babel-loader": "*",
+    "core-js": "*",
+    "css-loader": "*",
+    "file-loader": "*",
+    "qr-scanner": "*",
+    "qrcode": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-router-dom": "*",
+    "sass-loader": "*",
+    "spectre.css": "*",
+    "style-loader": "*"
+  },
   "scripts": {
     "build": "webpack"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Michael R. Krisnadhi",
+  "license": "BSD 3-Clause"
 }

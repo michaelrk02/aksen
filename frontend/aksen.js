@@ -19,5 +19,11 @@ function initRPC(rpcURL) {
     rpc.admin = new RPC.Channel(rpcURL + 'admin/');
 }
 
-export {RPC, Loading, Modal, Header, Footer, Sidebar, RequiredField, initRPC, rpc};
+const idCurrencyFormat = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'});
+
+function idr(number) {
+    return idCurrencyFormat.format(parseInt(number));
+}
+
+export {RPC, Loading, Modal, Header, Footer, Sidebar, RequiredField, initRPC, rpc, idr};
 

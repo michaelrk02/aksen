@@ -24,10 +24,16 @@ export default class OrderFormLocked extends Component {
         }).bind(this), 1000);
     }
 
+    componentWillUnmount() {
+        if (this.countdown !== null) {
+            window.clearInterval(this.countdown);
+        }
+    }
+
     render() {
         const hours = Math.floor(this.state.timeLeft / 3600);
         const minutes = Math.floor(this.state.timeLeft / 60) % 60;
-        const seconds = Math.floor(this.state.timeLeft) % 60;
+        const seconds = this.state.timeLeft % 60;
 
         return $('div', {className: 'empty'}, [
             $('div', {className: 'empty-icon'}, $('i', {className: 'icon icon-stop icon-4x'})),

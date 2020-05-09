@@ -13,13 +13,14 @@ import OrderInvoiceView from './portal/OrderInvoiceView.js';
 import OrderTickets from './portal/OrderTickets.js';
 import OrderTicketsView from './portal/OrderTicketsView.js';
 
-window.accessInvoiceID = '';
+window.baseURL = '/';
 
 window.addEventListener('load', () => {
     const body = document.getElementById('body');
     body.className = 'bg-gray';
 
     const app = document.getElementById('app');
+    window.baseURL = app.getAttribute('data-baseurl');
     initRPC(app.getAttribute('data-rpc'));
 
     const router = $(Router, {basename: app.getAttribute('data-basename')}, [
