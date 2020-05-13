@@ -14,6 +14,7 @@ import OrderTickets from './portal/OrderTickets.js';
 import OrderTicketsView from './portal/OrderTicketsView.js';
 
 window.baseURL = '/';
+window.orderFinished = false;
 
 window.addEventListener('load', () => {
     const body = document.getElementById('body');

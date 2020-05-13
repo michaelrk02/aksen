@@ -61,10 +61,10 @@ class Portal extends CI_Controller {
                     $email = $this->rpc->param('email');
                     $order_details = $this->rpc->param('order_details');
 
-                    $this->invoices_model->create_invoice($email, $order_details, $category_id, $tickets);
+                    $invoice_id = $this->invoices_model->create_invoice($email, $order_details, $category_id, $tickets);
 
                     $this->accesses_model->lock($this->input->ip_address());
-                    $this->rpc->reply();
+                    $this->rpc->reply($invoice_id);
                 } else {
                     $this->rpc->error(str_replace("\n", ';', strip_tags(validation_errors())));
                 }
@@ -95,6 +95,19 @@ class Portal extends CI_Controller {
             }
         } else {
             $this->rpc->error();
+        }
+    }
+
+    public function GetPaymentMethods() {
+        $this->load->model('config_model');
+
+        $payment_methods = $this->config_model->get('payment.methods');
+        if (!empty($payment_methods)) {
+            $payment_methods = explode(',', $payment_methods);
+
+            $this->rpc->reply($payment_methods);
+        } else {
+            $this->rpc->error('', 404);
         }
     }
 

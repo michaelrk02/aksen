@@ -25,7 +25,9 @@ export default class CheckoutModal extends Modal.Window {
                 this.setState({ordering: false});
                 if (res.code == 200) {
                     window.alert('Form pemesanan berhasil dikirim! Tagihan telah kami kirim menuju e-mail anda (' + data.email + ')');
-                    this.page.props.history.push('/');
+                    window.orderFinished = true;
+                    window.sessionStorage.setItem('aksen.access_invoice_id_history', res.value);
+                    this.page.props.history.push('/order/invoice/view');
                 } else {
                     window.alert('Terjadi kegagalan: ' + res.status + '. Mohon untuk dicoba lagi');
                 }

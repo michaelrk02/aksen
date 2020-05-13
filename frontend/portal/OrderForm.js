@@ -70,11 +70,11 @@ export default class OrderForm extends Component {
                 $('div', {className: 'popup'}, [
                     $('h5', {className: 'text-bold text-primary'}, 'Anda memilih untuk memesan tiket'),
                     $('p', null, 'Silakan mengisi form di bawah ini untuk melakukan pemesanan. Anda dapat menggunakan alamat e-mail yang sama jika ingin memesan lebih dari satu kali (dengan syarat harus menunggu beberapa jam atau menit untuk kembali melakukan pemesanan)'),
-                    (!locked ?
+                    !locked ?
                         ((this.state.lockDuration === -1) ?
                             $(Loading.Text, {description: 'Menghubungi server ...'}) :
                             $(OrderFormUnlocked, {form: this})) :
-                        $(OrderFormLocked, {form: this, duration: this.state.lockDuration})),
+                        $(OrderFormLocked, {form: this, duration: this.state.lockDuration}),
                     $('div', {className: 'columns', style: {marginTop: '2rem'}}, [
                         $('div', {className: 'column col-4 col-sm-6 col-mr-auto'}, $(Link, {to: '/order', className: 'btn btn-error btn-block', onClick: this.onReturn}, [$('i', {className: 'icon icon-arrow-left'}), ' Kembali'])),
                         $('div', {className: 'column col-4 col-sm-6 col-ml-auto'}, $('button', {className: 'btn btn-success btn-block', disabled: locked, onClick: this.onOrder}, ['Pesan Tiket ', $('i', {className: 'icon icon-check'})]))

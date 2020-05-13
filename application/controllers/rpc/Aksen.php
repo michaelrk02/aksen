@@ -16,14 +16,14 @@ class Aksen extends CI_Controller {
         $this->rpc->reply($categories);
     }
 
-    public function GetTicketPrice() {
+    public function GetTicketProperties() {
         $this->load->model('categories_model');
 
         $category_id = $this->rpc->param('category_id');
         if (!empty($category_id)) {
-            $category = $this->categories_model->get($category_id, 'price');
+            $category = $this->categories_model->get($category_id, 'name,price');
             if (isset($category)) {
-                $this->rpc->reply($category['price']);
+                $this->rpc->reply(['price' => $category['price'], 'category' => $category['name']]);
             } else {
                 $this->rpc->error('kategori tiket tidak ditemukan', 404);
             }

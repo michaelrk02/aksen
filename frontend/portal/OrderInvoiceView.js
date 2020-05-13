@@ -2,6 +2,8 @@ import {Component, createElement as $} from 'react';
 import {Link} from 'react-router-dom';
 import {Loading, rpc, idr} from '../aksen.js';
 
+import InvoiceIDModal from './InvoiceIDModal.js';
+
 export default class OrderInvoiceView extends Component {
 
     constructor(props) {
@@ -9,16 +11,29 @@ export default class OrderInvoiceView extends Component {
         this.state = {
             invoiceDetails: null,
             ticketPrice: 0,
+            ticketCategory: '',
             activeTab: 'amount',
-            activePaymentMethod: 'bank_transfer',
-            expireDuration: 0
+            paymentMethods: null,
+            activePaymentMethod: '',
+            expireDuration: 0,
+            invoiceIDModalShown: window.orderFinished
         };
         this.accessInvoiceID = null;
         this.expireTimer = null;
+        this.paymentDescriptions = {
+            bank_transfer: 'Transfer antar-bank',
+            gopay: 'Transfer ke rekening GO-PAY',
+            ovo: 'Transfer ke rekening OVO',
+            offline: 'Pembayaran offline secara tunai',
+            partnership: 'Pembayaran offline secara tunai melalui pihak ketiga'
+        };
 
+        this.onInvoiceIDShow = this.onInvoiceIDShow.bind(this);
+        this.onInvoiceIDModalClose = this.onInvoiceIDModalClose.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
         this.onPaymentMethodChange = this.onPaymentMethodChange.bind(this);
         this.onPayClick = this.onPayClick.bind(this);
+        this.onPayContinue = this.onPayContinue.bind(this);
         this.onFinishClick = this.onFinishClick.bind(this);
 
         if (window.sessionStorage.getItem('aksen.access_invoice_id_history') === null) {
@@ -26,6 +41,8 @@ export default class OrderInvoiceView extends Component {
             return;
         }
         this.accessInvoiceID = window.sessionStorage.getItem('aksen.access_invoice_id_history');
+
+        window.orderFinished = false;
     }
 
     componentDidMount() {
@@ -41,11 +58,11 @@ export default class OrderInvoiceView extends Component {
                     }
                 }).bind(this), 1000);
 
-                rpc.aksen.initiate('GetTicketPrice', {
+                rpc.aksen.initiate('GetTicketProperties', {
                     category_id: res.value.category_id
                 }).then((res => {
                     if (res.code == 200) {
-                        this.setState({ticketPrice: res.value});
+                        this.setState({ticketPrice: res.value.price, ticketCategory: res.value.category});
                         window.sessionStorage.setItem('aksen.payment_amount', this.getTotalPrice());
                         window.sessionStorage.setItem('aksen.payment_amount_offline', this.state.invoiceDetails.tickets * res.value);
                     } else {
@@ -55,6 +72,23 @@ export default class OrderInvoiceView extends Component {
             } else {
                 window.alert('Gagal mendapatkan keterangan tagihan: ' + res.status + '. Mohon coba lagi');
             }
+        }).bind(this)).execute();
+
+        rpc.portal.initiate('GetPaymentMethods').then((res => {
+            if (res.code == 200) {
+                const methods = [];
+                const validMethods = ['bank_transfer', 'gopay', 'ovo', 'offline', 'partnership'];
+                for (let method of res.value) {
+                    const index = validMethods.findIndex(m => m === method);
+                    if (index != -1) {
+                        validMethods.splice(index, 1);
+                        methods.push([method, this.paymentDescriptions[method]]);
+                    }
+                }
+                this.setState({paymentMethods: methods});
+            } else {
+                this.setState({paymentMethods: []});
+            }            
         }).bind(this)).execute();
     }
 
@@ -75,6 +109,7 @@ export default class OrderInvoiceView extends Component {
         }
 
         return $('div', {className: 'container grid-md'}, [
+            $(InvoiceIDModal, {shown: this.state.invoiceIDModalShown, onClose: this.onInvoiceIDModalClose}),
             $('div', {className: 'popup'}, [
                 $('h5', {className: 'text-bold text-primary'}, 'Tagihan'),
                 (details === null ?
@@ -82,7 +117,8 @@ export default class OrderInvoiceView extends Component {
                     $('div', {className: 'panel'}, [
                         $('div', {className: 'panel-header'}, [
                             $('div', {className: 'columns m-2'}, $('div', {className: 'column col-auto col-mr-auto col-ml-auto'}, $('figure', {className: 'avatar avatar-xl'}, $('i', {className: 'icon icon-people icon-2x', style: {width: '100%', margin: '0.75rem auto'}})))),
-                            $('div', {className: 'columns m-2'}, $('div', {className: 'column col-auto col-mr-auto col-ml-auto'}, details.email))
+                            $('div', {className: 'text-center', style: {overflow: 'auto'}}, details.email),
+                            $('div', {className: 'text-center'}, $('button', {className: 'btn btn-link', onClick: this.onInvoiceIDShow}, 'Lihat kode tagihan'))
                         ]),
                         $('div', {className: 'panel-nav'}, [
                             $('ul', {className: 'tab tab-block'}, [['amount', 'Nominal'], ['details', 'Keterangan'], ['payment', 'Pembayaran']].map((item => {
@@ -91,13 +127,6 @@ export default class OrderInvoiceView extends Component {
                         ]),
                         $('div', {className: 'panel-body p-2'}, (() => {
                             const details = this.state.invoiceDetails;
-                            const paymentMethods = [
-                                ['bank_transfer', 'Transfer antar-bank'],
-                                ['gopay', 'Transfer ke rekening GO-PAY'],
-                                ['ovo', 'Transfer ke rekening OVO'],
-                                ['offline', 'Pembayaran offline secara cash'],
-                                ['partnership', 'Pembayaran offline via pihak ketiga'],
-                            ];
 
                             switch (this.state.activeTab) {
                             case 'amount': return $('div', {className: 'm-2'}, [
@@ -119,7 +148,7 @@ export default class OrderInvoiceView extends Component {
                                 ]),
                                 $('div', {className: 'form-group'}, [
                                     $('div', {className: 'text-bold'}, 'TOTAL'),
-                                    $('div', null, idr(this.getTotalPrice()))
+                                    $('div', {className: 'label'}, idr(this.getTotalPrice()))
                                 ])
                             ]);
                             case 'details': return $('div', {className: 'm-2'}, [
@@ -132,6 +161,12 @@ export default class OrderInvoiceView extends Component {
                                     $('div', null, details.order_details)
                                 ]),
                                 $('div', {className: 'form-group'}, [
+                                    $('div', {className: 'text-bold'}, 'Kategori tiket'),
+                                    this.state.ticketCategory === '' ?
+                                        $(Loading.Text, {description: 'Menunggu ...'}) :
+                                        $('div', null, this.state.ticketCategory)
+                                ]),
+                                $('div', {className: 'form-group'}, [
                                     $('div', {className: 'text-bold'}, 'Waktu memesan'),
                                     $('div', null, details.order_time)
                                 ]),
@@ -142,15 +177,19 @@ export default class OrderInvoiceView extends Component {
                             ]);
                             case 'payment': return $('div', {className: 'm-2'}, [
                                 $('p', null, ['Silakan pilih salah satu metode pembayaran di bawah kemudian klik tombol ', $('b', null, 'Lanjut')], '. Nomor pemesanan ', $('b', null, 'wajib'), ' ditambahkan sebagai nominal jika ingin melakukan transaksi secara tidak tunai.'),
-                                paymentMethods.map((item => {
-                                    const active = this.state.activePaymentMethod;
-                                    return $('label', {className: 'form-radio'}, [
-                                        $('input', {type: 'radio', name: '__activePaymentMethod', value: item[0], checked: (active === item[0]), onChange: this.onPaymentMethodChange}),
-                                        $('i', {className: 'form-icon'}),
-                                        ' ',
-                                        $('span', {className: (active === item[0] ? 'text-bold' : '')}, item[1])
-                                    ]);
-                                }).bind(this))
+                                this.state.paymentMethods === null ?
+                                    $(Loading.Text, {description: 'Mendapatkan ...'}) :
+                                    (this.state.paymentMethods.length == 0 ?
+                                        $('p', null, 'Tidak ada metode pembayaran yang tersedia') :
+                                        this.state.paymentMethods.map((item => {
+                                            const active = this.state.activePaymentMethod;
+                                            return $('label', {className: 'form-radio'}, [
+                                                $('input', {type: 'radio', name: '__activePaymentMethod', value: item[0], checked: (active === item[0]), onChange: this.onPaymentMethodChange}),
+                                                $('i', {className: 'form-icon'}),
+                                                ' ',
+                                                $('span', {className: (active === item[0] ? 'text-bold' : '')}, item[1])
+                                            ]);
+                                        }).bind(this)))
                             ]);
                             }
                         }).bind(this)()),
@@ -162,7 +201,9 @@ export default class OrderInvoiceView extends Component {
                                     $('h3', {className: 'text-center'}, timeLeftStr)
                                 ])),
                             $('div', null, this.state.activeTab === 'payment' ?
-                                $('a', {className: 'btn btn-primary btn-block', target: '_blank', href: window.baseURL + 'index.php/payment/' + this.state.activePaymentMethod}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})]) :
+                                (this.state.activePaymentMethod === '' ?
+                                    $('div', {className: 'btn btn-primary btn-block disabled'}, 'Pilih metode pembayaran terlebih dahulu') :
+                                    $('a', {className: 'btn btn-primary btn-block', target: '_blank', href: window.baseURL + 'index.php/payment/' + this.state.activePaymentMethod, onClick: this.onPayContinue}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})])) :
                                 $('button', {className: 'btn btn-primary btn-block', onClick: this.onPayClick}, 'Bayar sekarang')
                             )
                         ])
@@ -173,6 +214,16 @@ export default class OrderInvoiceView extends Component {
                 ])
             ])
         ]);
+    }
+
+    onInvoiceIDShow() {
+        if (window.confirm('Apakah anda yakin?')) {
+            this.setState({invoiceIDModalShown: true});
+        }
+    }
+
+    onInvoiceIDModalClose() {
+        this.setState({invoiceIDModalShown: false});
     }
 
     onTabChange(e) {
@@ -186,6 +237,15 @@ export default class OrderInvoiceView extends Component {
 
     onPayClick() {
         this.setState({activeTab: 'payment'});
+    }
+
+    onPayContinue(e) {
+        const expired = this.state.expireDuration <= 0;
+        if (expired) {
+            if (!window.confirm('Apakah anda yakin ingin tetap membayar? Formulir pemesanan anda akan segera dihapus oleh panitia karena tagihan ini sudah melewati batas. Kami merekomendasikan anda untuk mengajukan form pemesanan lagi.')) {
+                e.preventDefault();
+            }
+        }
     }
 
     onFinishClick() {

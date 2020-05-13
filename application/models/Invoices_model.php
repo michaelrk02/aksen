@@ -29,6 +29,8 @@ class Invoices_model extends CI_Model {
                 (`invoice_id`, `email`, `order_details`, `category_id`, `tickets`, `order_time`, `order_id`, `expire_time`)
                 VALUES (?, ?, ?, ?, ?, NOW(), ?, ADDTIME(NOW(), SEC_TO_TIME(?)))',
             [$invoice_id, $email, $order_details, $category_id, $tickets, $order_id, $expire]);
+
+        return $invoice_id;
     }
 
     public function exists($invoice_id) {
