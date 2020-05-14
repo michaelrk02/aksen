@@ -40,8 +40,9 @@ class Portal extends CI_Controller {
             $this->load->model('categories_model');
 
             $category_id = $this->rpc->param('category_id');
-
-            if ($this->categories_model->exists($category_id)) {
+            $category = $this->categories_model->get($category_id, 'name,price');
+            if (isset($category)) {
+                $this->load->helper('string');
                 $this->load->library('form_validation');
                 $this->load->model('config_model');
 
@@ -55,16 +56,23 @@ class Portal extends CI_Controller {
                 $this->form_validation->set_rules('tickets', 'tickets', 'greater_than[0]|less_than_equal_to['.$max_tickets.']');
 
                 if ($this->form_validation->run() === TRUE) {
+                    $this->load->library(['email_messages', 'mailer']);
                     $this->load->model('invoices_model');
+
+                    $this->accesses_model->lock($this->input->ip_address());
 
                     $tickets = $this->rpc->param('tickets');
                     $email = $this->rpc->param('email');
                     $order_details = $this->rpc->param('order_details');
-
                     $invoice_id = $this->invoices_model->create_invoice($email, $order_details, $category_id, $tickets);
 
-                    $this->accesses_model->lock($this->input->ip_address());
-                    $this->rpc->reply($invoice_id);
+                    $invoice = $this->invoices_model->get($invoice_id, 'invoice_id,email,order_details,tickets,order_time,order_id,expire_time');
+                    $invoice['category'] = $category;
+                    if ($this->mailer->mail($email, 'Tagihan Pembayaran E-tiket AKSEN SMAGA', $this->email_messages->invoice($invoice)) === TRUE) {
+                        $this->rpc->reply($invoice_id);
+                    } else {
+                        $this->rpc->error('terjadi kesalahan pada server saat mengirimkan e-mail, mohon segera hubungi panitia', 500);
+                    }
                 } else {
                     $this->rpc->error(str_replace("\n", ';', strip_tags(validation_errors())));
                 }

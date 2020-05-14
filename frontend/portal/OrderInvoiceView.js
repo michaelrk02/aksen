@@ -118,6 +118,7 @@ export default class OrderInvoiceView extends Component {
                         $('div', {className: 'panel-header'}, [
                             $('div', {className: 'columns m-2'}, $('div', {className: 'column col-auto col-mr-auto col-ml-auto'}, $('figure', {className: 'avatar avatar-xl'}, $('i', {className: 'icon icon-people icon-2x', style: {width: '100%', margin: '0.75rem auto'}})))),
                             $('div', {className: 'text-center', style: {overflow: 'auto'}}, details.email),
+                            $('div', {className: 'text-center'}, 'Nomor pemesanan #' + details.order_id),
                             $('div', {className: 'text-center'}, $('button', {className: 'btn btn-link', onClick: this.onInvoiceIDShow}, 'Lihat kode tagihan'))
                         ]),
                         $('div', {className: 'panel-nav'}, [

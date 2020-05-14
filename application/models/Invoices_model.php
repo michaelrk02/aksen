@@ -10,19 +10,19 @@ class Invoices_model extends CI_Model {
         $this->load->helper('string');
         $this->load->model('config_model');
 
-        $invoice_id = '';
-        do {
-            $invoice_id = random_string('alnum', 16);
-        } while ($this->exists($invoice_id));
-
         $order_id = $this->config_model->get('order.next_id');
         $order_id = (int)$order_id;
-        $this->config_model->set('order.next_id', $order_id + 1);
+        $this->config_model->set('order.next_id', ($order_id + 1) % 1000);
 
         $expire = $this->config_model->get('order.expire');
         $expire = $expire === NULL ? 24 : $expire;
         $expire = $expire * 86400;
         $expire = (int)$expire;
+
+        $invoice_id = '';
+        do {
+            $invoice_id = random_string('alnum', 16);
+        } while ($this->exists($invoice_id));
 
         $this->db->query(
             'INSERT INTO `invoices`

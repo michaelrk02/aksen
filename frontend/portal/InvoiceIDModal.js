@@ -16,7 +16,7 @@ export default class InvoiceIDModal extends Modal.Window {
 
     _getBody() {
         return [
-            $('p', null, 'Berikut adalah kode tagihan anda. Anda dapat menyalin kode berikut dan menyimpan ke memo rahasia anda jika anda tidak segera mendapatkan notifikasi e-mail tagihan dari kami.'),
+            $('p', null, 'Berikut adalah kode tagihan anda. Anda dapat menyalin kode berikut dan menyimpan ke memo atau catatan pribadi anda jika anda tidak segera mendapatkan notifikasi e-mail tagihan dari kami.'),
             $('div', {className: 'form-group'}, [
                 $('div', {className: 'input-group'}, [
                     $('span', {className: 'input-group-addon'}, $('i', {className: 'icon icon-link'})),
