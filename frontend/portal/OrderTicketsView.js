@@ -8,7 +8,9 @@ export default class OrderTicketsView extends Component {
         this.accessInvoiceID = null;
 
         this.onFinishClick = this.onFinishClick.bind(this);
+    }
 
+    componentDidMount() {
         if (window.sessionStorage.getItem('aksen.access_invoice_id_history') === null) {
             this.props.history.replace('/order/tickets');
             return;

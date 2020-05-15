@@ -20,12 +20,12 @@ export default class OrderInvoiceView extends Component {
         };
         this.accessInvoiceID = null;
         this.expireTimer = null;
-        this.paymentDescriptions = {
-            bank_transfer: 'Transfer antar-bank',
-            gopay: 'Transfer ke rekening GO-PAY',
-            ovo: 'Transfer ke rekening OVO',
-            offline: 'Pembayaran offline secara tunai',
-            partnership: 'Pembayaran offline secara tunai melalui pihak ketiga'
+        this.paymentProperties = {
+            bank_transfer: {description: 'Transfer antar-bank', cashless: true},
+            gopay: {description: 'Transfer ke rekening GO-PAY', cashless: true},
+            ovo: {description: 'Transfer ke rekening OVO', cashless: true},
+            offline: {description: 'Pembayaran offline secara tunai', cashless: false},
+            partnership: {description: 'Pembayaran offline secara tunai melalui pihak ketiga', cashless: false}
         };
 
         this.onInvoiceIDShow = this.onInvoiceIDShow.bind(this);
@@ -36,16 +36,16 @@ export default class OrderInvoiceView extends Component {
         this.onPayContinue = this.onPayContinue.bind(this);
         this.onFinishClick = this.onFinishClick.bind(this);
 
+        window.orderFinished = false;
+    }
+
+    componentDidMount() {
         if (window.sessionStorage.getItem('aksen.access_invoice_id_history') === null) {
             this.props.history.replace('/order/invoice');
             return;
         }
         this.accessInvoiceID = window.sessionStorage.getItem('aksen.access_invoice_id_history');
 
-        window.orderFinished = false;
-    }
-
-    componentDidMount() {
         rpc.portal.initiate('GetInvoiceDetails', {
             invoice_id: this.accessInvoiceID
         }).then((res => {
@@ -63,8 +63,6 @@ export default class OrderInvoiceView extends Component {
                 }).then((res => {
                     if (res.code == 200) {
                         this.setState({ticketPrice: res.value.price, ticketCategory: res.value.category});
-                        window.sessionStorage.setItem('aksen.payment_amount', this.getTotalPrice());
-                        window.sessionStorage.setItem('aksen.payment_amount_offline', this.state.invoiceDetails.tickets * res.value);
                     } else {
                         window.alert('Gagal mendapatkan harga tiket per satuan: ' + res.status + '. Mohon coba lagi');
                     }
@@ -82,7 +80,7 @@ export default class OrderInvoiceView extends Component {
                     const index = validMethods.findIndex(m => m === method);
                     if (index != -1) {
                         validMethods.splice(index, 1);
-                        methods.push([method, this.paymentDescriptions[method]]);
+                        methods.push([method, this.paymentProperties[method].description]);
                     }
                 }
                 this.setState({paymentMethods: methods});
@@ -141,7 +139,7 @@ export default class OrderInvoiceView extends Component {
                                 ]),
                                 $('div', {className: 'form-group'}, [
                                     $('div', {className: 'text-bold'}, 'Subtotal harga'),
-                                    $('div', null, idr(details.tickets * this.state.ticketPrice))
+                                    $('div', null, idr(this.getSubtotalPrice()))
                                 ]),
                                 $('div', {className: 'form-group'}, [
                                     $('div', {className: 'text-bold'}, 'Nomor pemesanan'),
@@ -204,7 +202,7 @@ export default class OrderInvoiceView extends Component {
                             $('div', null, this.state.activeTab === 'payment' ?
                                 (this.state.activePaymentMethod === '' ?
                                     $('div', {className: 'btn btn-primary btn-block disabled'}, 'Pilih metode pembayaran terlebih dahulu') :
-                                    $('a', {className: 'btn btn-primary btn-block', target: '_blank', href: window.baseURL + 'index.php/payment/' + this.state.activePaymentMethod, onClick: this.onPayContinue}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})])) :
+                                    $('a', {className: 'btn btn-primary btn-block', target: '_blank', href: window.baseURL + 'index.php/payment/' + this.state.activePaymentMethod + '?amount=' + (this.paymentProperties[this.state.activePaymentMethod].cashless ? this.getTotalPrice() : this.getSubtotalPrice()), onClick: this.onPayContinue}, ['Lanjut ', $('i', {className: 'icon icon-arrow-right'})])) :
                                 $('button', {className: 'btn btn-primary btn-block', onClick: this.onPayClick}, 'Bayar sekarang')
                             )
                         ])
@@ -257,6 +255,15 @@ export default class OrderInvoiceView extends Component {
             }
             this.props.history.push('/');
         }
+    }
+
+    getSubtotalPrice() {
+        const details = this.state.invoiceDetails;
+        if (details !== null) {
+            return parseInt(details.tickets * this.state.ticketPrice);
+        }
+
+        return 0;
     }
 
     getTotalPrice() {

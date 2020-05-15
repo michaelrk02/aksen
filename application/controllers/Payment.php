@@ -23,7 +23,7 @@ class Payment extends CI_Controller {
             $accounts[] = ['name' => $account[0], 'vendor' => $account[1], 'number' => $account[2]];
         }
 
-        $data = ['amount' => $this->amount, 'accounts' => $accounts];
+        $data = ['amount' => 'Rp. '.number_format($this->amount, 2, ',', '.'), 'accounts' => $accounts];
 
         $this->load->view('payment/header');
         $this->load->view('payment/bank_transfer', $data);
