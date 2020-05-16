@@ -16,7 +16,7 @@ export default class OrderInvoiceView extends Component {
             paymentMethods: null,
             activePaymentMethod: '',
             expireDuration: 0,
-            invoiceIDModalShown: window.orderFinished
+            invoiceIDModalShown: (typeof(props.location.state) === 'object' && typeof(props.location.state.ordered) === 'boolean' && props.location.state.ordered)
         };
         this.accessInvoiceID = null;
         this.expireTimer = null;
@@ -35,8 +35,6 @@ export default class OrderInvoiceView extends Component {
         this.onPayClick = this.onPayClick.bind(this);
         this.onPayContinue = this.onPayContinue.bind(this);
         this.onFinishClick = this.onFinishClick.bind(this);
-
-        window.orderFinished = false;
     }
 
     componentDidMount() {

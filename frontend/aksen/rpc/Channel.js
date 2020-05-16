@@ -7,15 +7,25 @@ export default class Channel {
         this.permanentHeaders = {};
     }
 
+    getPermanentHeader(header) {
+        return typeof(this.permanentHeaders[header]) !== 'undefined' ? this.permanentHeaders[header] : null;
+    }
+
     setPermanentHeader(header, value) {
         this.permanentHeaders[header] = value;
     }
 
-    initiate(method, args, headers) {
-        if (typeof(headers) !== 'undefined') {
-            for (let header of this.permanentHeaders) {
-                headers[header] = this.permanentHeaders[header];
-            }
+    removePermanentHeader(header) {
+        if (typeof(this.permanentHeaders[header]) !== 'undefined') {
+            delete this.permanentHeaders[header];
+        }
+    }
+
+    initiate(method, args, additionalHeaders) {
+        const headers = {};
+        Object.assign(headers, this.permanentHeaders);
+        if (typeof(additionalHeaders) !== 'undefined') {
+            Object.assign(headers, additionalHeaders);
         }
 
         return new Request(this.address + method, args, headers);

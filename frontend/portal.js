@@ -1,7 +1,7 @@
 import 'core-js/stable';
 
 import {createElement as $} from 'react';
-import ReactDOM from 'react-dom';
+import {render} from 'react-dom';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {RPC, Header, Footer, initRPC} from './aksen.js';
 
@@ -14,7 +14,6 @@ import OrderTickets from './portal/OrderTickets.js';
 import OrderTicketsView from './portal/OrderTicketsView.js';
 
 window.baseURL = '/';
-window.orderFinished = false;
 
 window.addEventListener('load', () => {
     const body = document.getElementById('body');
@@ -40,6 +39,6 @@ window.addEventListener('load', () => {
         ]),
     ]);
 
-    ReactDOM.render(router, app);
+    render(router, app);
 });
 
