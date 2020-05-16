@@ -4,7 +4,6 @@ import * as Modal from './aksen/modal.js';
 
 import Header from './aksen/Header.js';
 import Footer from './aksen/Footer.js';
-//import Sidebar from './aksen/Sidebar.js';
 import RequiredField from './aksen/RequiredField.js';
 
 const rpc = {
@@ -25,5 +24,5 @@ function idr(number) {
     return idCurrencyFormat.format(parseInt(number));
 }
 
-export {RPC, Loading, Modal, Header, Footer, /*Sidebar,*/ RequiredField, initRPC, rpc, idr};
+export {RPC, Loading, Modal, Header, Footer, RequiredField, initRPC, rpc, idr};
 
