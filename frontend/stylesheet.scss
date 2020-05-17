@@ -20,10 +20,6 @@ $error-color: #FF2B2A;
     flex: 1 0 auto;
 }
 
-.shadow-1, .popup {
-    box-shadow: 0px 0px 8px 0px lightgrey;
-}
-
 @keyframes animatezoom {
     from {
         transform: scale(0);
@@ -33,16 +29,29 @@ $error-color: #FF2B2A;
     }
 }
 
-.popup {
+.popup, .popup-small {
     animation: animatezoom 0.6s;
     background-color: white;
 }
 
+.popup {
+    box-shadow: 0px 0px 8px 0px lightgrey;
+}
+
+.popup-small {
+    box-shadow: 0px 0px 4px 0px lightgrey;
+}
+
 @media (max-width: $size-sm) {
     .popup {
-        margin: 0.75rem;
-        padding: 0.75rem;
+        margin: 1.0rem;
+        padding: 1.0rem;
         border-radius: 8px;
+    }
+
+    .popup-small {
+        padding: 0.5rem;
+        border-radius: 4px;
     }
 }
 
@@ -52,6 +61,15 @@ $error-color: #FF2B2A;
         padding: 2rem;
         border-radius: 16px;
     }
+
+    .popup-small {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+}
+
+.shadow-1 {
+    box-shadow: 0px 0px 8px 0px lightgrey;
 }
 
 .shadow-2 {

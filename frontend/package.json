@@ -8,6 +8,7 @@
     "@babel/core": "*",
     "@babel/preset-env": "*",
     "babel-loader": "*",
+    "chart.js": "*",
     "core-js": "*",
     "css-loader": "*",
     "file-loader": "*",

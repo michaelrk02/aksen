@@ -25,7 +25,9 @@ class Categories_model extends CI_Model {
 
     public function get_all($columns = '*', $conditions = NULL) {
         $this->db->select($columns)->from('categories');
-        $this->db->where($conditions);
+        if (isset($conditions)) {
+            $this->db->where($conditions);
+        }
         $this->db->order_by('name');
 
         return $this->db->get()->result_array();
