@@ -3,3 +3,4 @@ N.B. saat berpindah antara development/production:
 - frontend/webpack.config.json: ganti mode ke production/development lalu build ulang
 - application/config/config.php: ganti base_url
 - application/config/database.php: ganti database name, username, password
+- application/config/constants.php: ganti SERVER_SECRET

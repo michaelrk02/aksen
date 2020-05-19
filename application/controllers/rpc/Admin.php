@@ -10,6 +10,30 @@ class Admin extends CI_Controller {
     }
 
     public function Authenticate() {
+        if (!empty(SERVER_SECRET)) {
+            $this->load->model('config_model');
+
+            $password = $this->rpc->param('password');
+            $valid = $this->config_model->get('admin.password');
+            if (!empty($valid)) {
+                if (password_verify($password, $valid)) {
+                    $payload = ['issued_at' => time()];
+                    $payload = base64_encode(json_encode($payload));
+                    $signature = sha1($payload.'.'.SERVER_SECRET);
+                    $token = $payload.'.'.$signature;
+                    $this->rpc->reply($token);
+                } else {
+                    $this->rpc->error('password yang anda masukkan tidak valid', 401);
+                }
+            } else {
+                $this->rpc->error('anda tidak dapat mengakses situs admin untuk sekarang ini. Mohon hubungi panitia', 500);
+            }
+        } else {
+            $this->rpc->error('SERVER_SECRET tidak terdefinisi. Mohon hubungi panitia', 500);
+        }
+    }
+
+    public function AuthCheck() {
         $this->authenticator->check();
     }
 

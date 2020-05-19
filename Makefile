@@ -17,6 +17,7 @@ development:
 	@ echo 'Setting up development environment ...'
 	@ $(COPY) $(DEVDIR)/config.php $(CFGDIR)/config.php
 	@ $(COPY) $(DEVDIR)/database.php $(CFGDIR)/database.php
+	@ $(COPY) $(DEVDIR)/constants.php $(CFGDIR)/constants.php
 	@ $(COPY) $(DEVDIR)/index.php $(BASEDIR)/index.php
 	@ $(COPY) $(DEVDIR)/webpack.config.js $(FRONTENDDIR)/webpack.config.js
 	@ echo 'Done'
@@ -27,6 +28,7 @@ production:
 	@ echo 'Setting up production environment ...'
 	@ $(COPY) $(PRODDIR)/config.php $(CFGDIR)/config.php
 	@ $(COPY) $(PRODDIR)/database.php $(CFGDIR)/database.php
+	@ $(COPY) $(PRODDIR)/constants.php $(CFGDIR)/constants.php
 	@ $(COPY) $(PRODDIR)/index.php $(BASEDIR)/index.php
 	@ $(COPY) $(PRODDIR)/webpack.config.js $(FRONTENDDIR)/webpack.config.js
 	@ echo 'Done'

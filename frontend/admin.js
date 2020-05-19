@@ -31,9 +31,9 @@ window.addEventListener('load', () => {
     window.baseURL = app.getAttribute('data-baseurl');
     initRPC(app.getAttribute('data-rpc'));
 
-    const authToken = window.sessionStorage.getItem('aksen.auth_token');
+    const authToken = window.sessionStorage.getItem('aksen.admin_auth_token');
     if (authToken !== null) {
-        rpc.admin.setPermanentHeader('X-AKSEN-AuthToken', authToken);
+        rpc.admin.setPermanentHeader('X-AKSEN-AdminAuthToken', authToken);
     }
 
     const sidebarItems = [

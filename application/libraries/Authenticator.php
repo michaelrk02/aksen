@@ -3,30 +3,43 @@
 class Authenticator {
 
     private $CI;
-    private $valid;
+
+    public $payload;
 
     public function __construct() {
         $this->CI =& get_instance();
-
-        $this->CI->load->model('config_model');
-        $this->valid = $this->CI->config_model->get('admin.password');
     }
 
     public function check() {
-        $token = $this->CI->input->get_request_header('X-AKSEN-AuthToken');
+        $token = $this->CI->input->get_request_header('X-AKSEN-AdminAuthToken');
         if (!empty($token)) {
-            if (!empty($this->valid)) {
-                $password = base64_decode($token);
-                if (!password_verify($password, $this->valid)) {
-                    $this->CI->rpc->error('kata sandi untuk autentikasi tidak valid', 401);
+            if (!empty(SERVER_SECRET)) {
+                $token = explode('.', $token);
+                if (count($token) == 2) {
+                    $payload = $token[0];
+                    $signature = $token[1];
+                    if ($signature === sha1($payload.'.'.SERVER_SECRET)) {
+                        $payload = json_decode(base64_decode($payload), TRUE);
+                        if (time() <= $payload['issued_at'] + 86400) {
+                            $this->payload = $payload;
+                        } else {
+                            $this->CI->rpc->error('sesi anda sudah berakhir. Silakan login lagi', 401);
+                            exit();
+                        }
+                    } else {
+                        $this->CI->rpc->error('tanda tangan digital untuk token autentikasi tidak cocok!', 401);
+                        exit();
+                    }
+                } else {
+                    $this->CI->rpc->error('token autentikasi tidak valid');
                     exit();
                 }
             } else {
-                $this->CI->rpc->error('password untuk autentikasi tidak tersedia', 500);
+                $this->CI->rpc->error('SERVER_SECRET tidak terdefinisi. Mohon hubungi panitia', 500);
                 exit();
             }
         } else {
-            $this->CI->rpc->error();
+            $this->CI->rpc->error('anda harus login dahulu', 401);
             exit();
         }
     }
