@@ -79,6 +79,15 @@ class Admin extends CI_Controller {
         $this->rpc->reply($info);
     }
 
+    public function GetTicketCategories() {
+        $this->authenticator->check();
+
+        $this->load->model('categories_model');
+
+        $categories = $this->categories_model->get_all();
+        $this->rpc->reply($categories);
+    }
+
 }
 
 ?>

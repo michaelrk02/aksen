@@ -1,6 +1,7 @@
 import * as RPC from './aksen/rpc.js';
 import * as Loading from './aksen/loading.js';
 import * as Modal from './aksen/modal.js';
+import * as Icons from './aksen/icons.js';
 
 import Header from './aksen/Header.js';
 import Footer from './aksen/Footer.js';
@@ -24,5 +25,5 @@ function idr(number) {
     return idCurrencyFormat.format(parseInt(number));
 }
 
-export {RPC, Loading, Modal, Header, Footer, RequiredField, initRPC, rpc, idr};
+export {RPC, Loading, Modal, Icons, Header, Footer, RequiredField, initRPC, rpc, idr};
 
