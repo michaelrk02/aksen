@@ -109,9 +109,9 @@ export default class Dashboard extends Component {
     initializeChart() {
         const info = this.state.info;
         const randColor = () => {
-            const red = Math.floor(Math.random() * 256);
-            const green = Math.floor(Math.random() * 256);
-            const blue = Math.floor(Math.random() * 256);
+            const red = Math.floor(Math.random() * 224);
+            const green = Math.floor(Math.random() * 224);
+            const blue = Math.floor(Math.random() * 224);
             return [red, green, blue];
         };
         const parseColor = (color, alpha) => {
