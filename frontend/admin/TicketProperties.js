@@ -3,7 +3,7 @@ import {Loading, rpc} from '../aksen.js';
 
 export default class TicketProperties extends Component {
 
-    constructor(/* action, data */ props) {
+    constructor(/* action, data, onSubmit, onDelete */ props) {
         super(props);
         this.state = {
             data: props.action === 'create' ? this.emptyData() : props.data,
@@ -11,6 +11,7 @@ export default class TicketProperties extends Component {
         };
 
         this.onSubmit = this.onSubmit.bind(this);
+        this.onDelete = this.onDelete.bind(this);
         this.onNameChange = this.onNameChange.bind(this);
         this.onPriceChange = this.onPriceChange.bind(this);
         this.onCapacityChange = this.onCapacityChange.bind(this);
@@ -84,41 +85,71 @@ export default class TicketProperties extends Component {
                 ])
             ]),
             $('div', {style: {marginTop: '1rem'}}, [
-                $('button', {className: 'btn btn-primary btn-block btn-success', disabled: this.state.submitting, onClick: this.onSubmit}, this.state.submitting ? $(Loading.Text, {description: 'Menigirim ...'}) : 'Kirim')
+                $('button', {className: 'btn btn-success btn-block', disabled: this.state.submitting, onClick: this.onSubmit}, this.state.submitting ? $(Loading.Text, {description: 'Menigirim ...'}) : 'Kirim'),
+                this.props.action === 'update' ?
+                    $('button', {className: 'btn btn-error btn-block', onClick: this.onDelete}, ['Hapus ', $('i', {className: 'icon icon-delete'})]) :
+                    null
             ])
         ]);
     }
 
     onSubmit() {
-        this.setState({submitting: true});
-        if (this.props.action === 'create') {
-            rpc.admin.initiate('CreateTicket', this.state.data).then((res => {
-                if (res.code == 200) {
-                    window.alert('Berhasil membuat tiket: ' + this.state.data.name);
-                    this.setState({data: this.emptyData()});
-                } else {
-                    window.alert('Gagal membuat tiket: ' + res.status + '. Mohon coba lagi');
-                }
-                this.setState({submitting: false});
+        if (window.confirm('Apakah anda yakin?')) {
+            this.setState({submitting: true});
+            if (this.props.action === 'create') {
+                rpc.admin.initiate('CreateTicket', this.state.data).then((res => {
+                    if (res.code == 200) {
+                        window.alert('Berhasil membuat tiket: ' + this.state.data.name);
+                    } else {
+                        window.alert('Gagal membuat tiket: ' + res.status + '. Mohon coba lagi');
+                    }
+                    this.setState({submitting: false});
 
-                if (typeof(this.props.onSubmit) === 'function') {
-                    this.props.onSubmit(res);
-                }
-            }).bind(this)).execute();
-        } else if (this.props.action === 'update') {
-            rpc.admin.initiate('UpdateTicket', this.state.data).then((res => {
-                if (res.code == 200) {
-                    window.alert('Berhasil memperbarui tiket: ' + this.state.data.name);
-                } else {
-                    window.alert('Gagal memperbarui tiket: ' + res.status + '. Mohon coba lagi');
-                }
-                this.setState({submitting: false});
+                    if (typeof(this.props.onSubmit) === 'function') {
+                        this.props.onSubmit(res);
+                    }
+                }).bind(this)).execute();
+            } else if (this.props.action === 'update') {
+                rpc.admin.initiate('UpdateTicket', this.state.data).then((res => {
+                    if (res.code == 200) {
+                        window.alert('Berhasil memperbarui tiket: ' + this.state.data.name);
+                    } else {
+                        window.alert('Gagal memperbarui tiket: ' + res.status + '. Mohon coba lagi');
+                    }
+                    this.setState({submitting: false});
 
-                if (typeof(this.props.onSubmit) === 'function') {
-                    this.props.onSubmit(res);
-                }
-            }).bind(this)).execute();
+                    if (typeof(this.props.onSubmit) === 'function') {
+                        this.props.onSubmit(res);
+                    }
+                }).bind(this)).execute();
+            }
         }
+    }
+
+    onDelete() {
+        rpc.admin.initiate('DeleteTicketAttempt', {
+            category_id: this.state.data.category_id
+        }).then((res => {
+            if (res.code == 200) {
+                if (window.confirm('Apakah anda yakin akan menghapus tiket ' + this.state.data.name + '?')) {
+                    rpc.admin.initiate('DeleteTicket', {
+                        category_id: this.state.data.category_id
+                    }).then((res => {
+                        if (res.code == 200) {
+                            window.alert('Tiket ' + this.state.data.name + ' berhasil dihapus');
+                        } else {
+                            window.alert('Gagal menghapus tiket: ' + res.status + '. Mohon coba lagi');
+                        }
+
+                        if (typeof(this.props.onDelete) === 'function') {
+                            this.props.onDelete(res);
+                        }
+                    }).bind(this)).execute();
+                }
+            } else {
+                window.alert('Tidak dapat menghapus tiket: ' + res.status);
+            }
+        }).bind(this)).execute();
     }
 
     onNameChange(e) {

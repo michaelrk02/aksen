@@ -88,6 +88,76 @@ class Admin extends CI_Controller {
         $this->rpc->reply($categories);
     }
 
+    public function CreateTicket() {
+        $this->authenticator->check();
+
+        if ($this->check_ticket_properties()) {
+            $this->load->model('categories_model');
+
+            $this->categories_model->create_ticket($_POST);
+
+            $this->rpc->reply();
+        }
+    }
+
+    public function UpdateTicket() {
+        $this->authenticator->check();
+
+        if ($this->check_ticket_properties()) {
+            $this->load->model('categories_model');
+
+            $category_id = $this->rpc->param('category_id');
+            unset($_POST['category_id']);
+            $this->categories_model->update_ticket($category_id, $_POST);
+
+            $this->rpc->reply();
+        }
+    }
+
+    public function DeleteTicketAttempt() {
+        $this->authenticator->check();
+
+        $this->load->model('categories_model');
+
+        if (!$this->categories_model->is_used($this->rpc->param('category_id'))) {
+            $this->rpc->reply();
+        } else {
+            $this->rpc->error('tiket sudah digunakan oleh pelanggan ataupun pemesan', 403);
+        }
+    }
+
+    public function DeleteTicket() {
+        $this->authenticator->check();
+
+        $this->load->model('categories_model');
+
+        if (!$this->categories_model->is_used($this->rpc->param('category_id'))) {
+            $this->categories_model->delete($this->rpc->param('category_id'));
+            $this->rpc->reply();
+        } else {
+            $this->rpc->error('tiket sudah digunakan oleh pelanggan ataupun pemesan', 403);
+        }
+    }
+
+    private function check_ticket_properties() {
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('name', 'name', 'required|max_length[50]');
+        $this->form_validation->set_rules('price', 'price', 'required|integer|greater_than_equal_to[0]');
+        $this->form_validation->set_rules('capacity', 'capacity', 'required|integer|greater_than_equal_to[0]');
+
+        if ($this->form_validation->run() === TRUE) {
+            if ($this->rpc->param('price') % 1000 == 0) {
+                return TRUE;
+            } else {
+                $this->rpc->error('harga tiket harus merupakan kelipatan dari 1000');
+            }
+        } else {
+            $this->rpc->error(str_replace("\n", ";", strip_tags(validation_errors())));
+        }
+        return FALSE;
+    }
+
 }
 
 ?>

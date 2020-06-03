@@ -18,6 +18,7 @@ export default class ManageTickets extends Component {
         this.onUpdateClick = this.onUpdateClick.bind(this);
         this.onCreateClick = this.onCreateClick.bind(this);
         this.onPropertiesSubmit = this.onPropertiesSubmit.bind(this);
+        this.onTicketDelete =this.onTicketDelete.bind(this);
     }
 
     fetchTickets() {
@@ -43,7 +44,7 @@ export default class ManageTickets extends Component {
             $(Loading.Modal, {shown: this.state.data === null, description: 'Mendapatkan list kategori tiket ...'}),
             $('div', {className: 'columns'}, [
                 $('div', {id: 'properties', className: 'column col-6 col-sm-12'}, [
-                    $(TicketProperties, {action: this.state.action, data: this.state.properties, onSubmit: this.onPropertiesSubmit})
+                    $(TicketProperties, {action: this.state.action, data: this.state.properties, onSubmit: this.onPropertiesSubmit, onDelete: this.onTicketDelete})
                 ]),
                 $('div', {className: 'column col-6 col-sm-12'}, [
                     $('div', {className: 'popup'}, [
@@ -98,6 +99,14 @@ export default class ManageTickets extends Component {
 
     onPropertiesSubmit(res) {
         if (res.code == 200) {
+            this.setState({action: 'create', properties: null});
+            this.fetchTickets();
+        }
+    }
+
+    onTicketDelete(res) {
+        if (res.code == 200) {
+            this.setState({action: 'create', properties: null});
             this.fetchTickets();
         }
     }
